@@ -1,7 +1,7 @@
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
-export class Profesional {
+export class Professional {
 	@PrimaryGeneratedColumn()
 	id: number
 
@@ -9,7 +9,7 @@ export class Profesional {
 	name: string
 
 	@Column()
-	profesion: string
+	profession: string
 
 	@Column()
 	price: number

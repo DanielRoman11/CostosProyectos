@@ -1,6 +1,6 @@
 const constants = {
   dataSource: 'DATA_SOURCE',
-  profesional: 'PROFESIONAL',
+  professional: 'PROFESIONAL',
 };
 
 export default constants;
