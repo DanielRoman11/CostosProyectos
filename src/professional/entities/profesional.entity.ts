@@ -1,16 +1,24 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Staff } from '../../staff/entities/staff.entity';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity()
 export class Professional {
-	@PrimaryGeneratedColumn()
-	id: number
+  @PrimaryGeneratedColumn()
+  id: number;
 
-	@Column()
-	name: string
+  @Column()
+  name: string;
 
-	@Column()
-	profession: string
+  @OneToOne(() => Staff)
+  @JoinColumn()
+  staff_type: Staff;
 
-	@Column()
-	price: number
+  @Column('decimal', { scale: 2 })
+  unit_price: string;
 }
