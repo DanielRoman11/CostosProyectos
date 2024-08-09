@@ -5,14 +5,13 @@ import {
   Get,
   Param,
   ParseIntPipe,
-  Patch,
   Post,
-  Put,
   Query,
 } from '@nestjs/common';
 import { CreateStaffDto } from './dtos/create-staff.dto';
 import { StaffService } from './staff.service';
 import { FindByInputStaffDto } from './dtos/findByInput-staff.dto';
+import { Staff } from './entities/staff.entity';
 
 @Controller('staff')
 export class StaffController {
@@ -23,18 +22,16 @@ export class StaffController {
     return this.staffService.create(input);
   }
 
-  @Patch()
-  findAll(@Body() input: FindByInputStaffDto) {
-    console.log(input);
-    if (input) {
-      return this.staffService.findByInput(input);
-    }
-    return this.staffService.getAll();
+  @Get()
+  findAll(@Query() query: FindByInputStaffDto) {
+    return query.name
+      ? this.staffService.findByInput(query.name)
+      : this.staffService.getAll();
   }
 
   @Get(':id')
-  findOne(@Param('id', new ParseIntPipe()) id: number) {
-    return 'Uno Uno uno';
+  findOne(@Param('id', new ParseIntPipe()) id: Pick<Staff, 'id'>) {
+    return this.staffService.findOne(id);
   }
 
   @Delete(':id')

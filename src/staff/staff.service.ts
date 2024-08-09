@@ -5,10 +5,9 @@ import {
   Logger,
 } from '@nestjs/common';
 import constants from '../shared/constants';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import { Staff } from './entities/staff.entity';
 import { CreateStaffDto } from './dtos/create-staff.dto';
-import { FindByInputStaffDto } from './dtos/findByInput-staff.dto';
 
 @Injectable()
 export class StaffService {
@@ -25,29 +24,33 @@ export class StaffService {
   public async create(input: CreateStaffDto) {
     if (
       await this.staffBaseQuery()
-        .where('upper(name) = upper(:name)', { name: input.name })
+        .where('name = :name', { name: input.name.toLocaleLowerCase() })
         .getExists()
     )
       throw new BadRequestException('Esta profesión ya existe.');
 
     return await this.staffRepo.save({
-      ...input,
-      name: input.name.trim(),
+      name: input.name.toLocaleLowerCase().trim(),
     });
   }
 
   public async getAll() {
-    return await this.staffRepo.find();
+    const query = this.staffBaseQuery();
+    this.logger.debug(query.getQuery());
+    return query.getMany();
   }
 
-  public async findByInput(input: FindByInputStaffDto) {
-    const query = this.staffBaseQuery().where('upper(name)', {
-      input: String(input.name).toUpperCase(),
+  public async findByInput(name: string) {
+    const query = this.staffBaseQuery().where({
+      name: ILike(`%${name}%`),
     });
+    this.logger.debug(query.getQuery());
+    return await query.getMany();
+  }
 
-    this.logger.debug('Query ORM', query.getQuery());
-    this.logger.debug('Query Response', query.getMany());
-
-    return 'hola';
+  public async findOne(id: Pick<Staff, 'id'>) {
+    const query = this.staffBaseQuery().where('id = :id', { id });
+    this.logger.debug(query.getQuery());
+    return await query.getOneOrFail();
   }
 }
