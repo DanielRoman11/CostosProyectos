@@ -15,7 +15,7 @@ import { SearchQueryProfessional } from './dto/searchQueryProfessional';
 import { UpdateProfessionalDto } from './dto/update-professional.dto';
 import { Professional } from './entities/profesional.entity';
 
-@Controller('profesional')
+@Controller('professional')
 export class ProfessionalController {
   logger = new Logger(ProfessionalController.name);
   constructor(private professionalService: ProfessionalService) {}
