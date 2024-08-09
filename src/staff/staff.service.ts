@@ -8,6 +8,7 @@ import constants from '../shared/constants';
 import { ILike, Repository } from 'typeorm';
 import { Staff } from './entities/staff.entity';
 import { CreateStaffDto } from './dtos/create-staff.dto';
+import { UpdateStaffDto } from './dtos/update-staff.dto';
 
 @Injectable()
 export class StaffService {
@@ -52,5 +53,14 @@ export class StaffService {
     const query = this.staffBaseQuery().where('id = :id', { id });
     this.logger.debug(query.getQuery());
     return await query.getOneOrFail();
+  }
+
+  public async update(input: UpdateStaffDto, id: Pick<Staff, 'id'>) {
+    const staff = await this.findOne(id);
+    return await this.staffRepo.save({
+      ...staff,
+      ...input,
+      name: input.name.toLocaleLowerCase(),
+    });
   }
 }

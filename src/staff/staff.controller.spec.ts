@@ -3,6 +3,7 @@ import { StaffController } from './staff.controller';
 import { StaffService } from './staff.service';
 import { Staff } from './entities/staff.entity';
 import { PickKeysByType } from 'typeorm/common/PickKeysByType';
+import { UpdateStaffDto } from './dtos/update-staff.dto';
 
 describe('StaffController', () => {
   let staffController: StaffController;
@@ -63,6 +64,26 @@ describe('StaffController', () => {
 
       expect(
         await staffController.findOne(<PickKeysByType<Staff, 'id'>>1),
+      ).toEqual(result);
+      expect(spy).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('Update Staff', () => {
+    it('should update an staff object', async () => {
+      const result: Staff = { id: 1, name: 'new name' };
+
+      const spy = jest
+        .spyOn(staffService, 'update')
+        .mockImplementation(
+          async (input: UpdateStaffDto, id: Pick<Staff, 'id'>) => result,
+        );
+
+      expect(
+        await staffController.update(
+          { name: 'New Name' },
+          <PickKeysByType<Staff, 'id'>>1,
+        ),
       ).toEqual(result);
       expect(spy).toHaveBeenCalledTimes(1);
     });

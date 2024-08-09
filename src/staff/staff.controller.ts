@@ -6,12 +6,14 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Put,
   Query,
 } from '@nestjs/common';
 import { CreateStaffDto } from './dtos/create-staff.dto';
 import { StaffService } from './staff.service';
 import { FindByInputStaffDto } from './dtos/findByInput-staff.dto';
 import { Staff } from './entities/staff.entity';
+import { UpdateStaffDto } from './dtos/update-staff.dto';
 
 @Controller('staff')
 export class StaffController {
@@ -32,6 +34,11 @@ export class StaffController {
   @Get(':id')
   findOne(@Param('id', new ParseIntPipe()) id: Pick<Staff, 'id'>) {
     return this.staffService.findOne(id);
+  }
+
+  @Put(':id')
+  update(@Body() input: UpdateStaffDto, @Param('id') id: Pick<Staff, 'id'>) {
+    return this.staffService.update(input, id);
   }
 
   @Delete(':id')
