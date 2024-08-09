@@ -3,14 +3,16 @@ import {
   Controller,
   Delete,
   Get,
-  Inject,
   Param,
+  ParseIntPipe,
+  Patch,
   Post,
   Put,
   Query,
 } from '@nestjs/common';
 import { CreateStaffDto } from './dtos/create-staff.dto';
 import { StaffService } from './staff.service';
+import { FindByInputStaffDto } from './dtos/findByInput-staff.dto';
 
 @Controller('staff')
 export class StaffController {
@@ -18,22 +20,21 @@ export class StaffController {
 
   @Post()
   create(@Body() input: CreateStaffDto) {
-    return 'This action adds a new cat';
+    return this.staffService.create(input);
   }
 
-  @Get()
-  findAll(@Query() query) {
-    return `This action returns all cats (limit: ${query.limit} items)`;
+  @Patch()
+  findAll(@Body() input: FindByInputStaffDto) {
+    console.log(input);
+    if (input) {
+      return this.staffService.findByInput(input);
+    }
+    return this.staffService.getAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return `This action returns a #${id} cat`;
-  }
-
-  @Put(':id')
-  update(@Param('id') id: string, @Body() updateCatDto) {
-    return `This action updates a #${id} cat`;
+  findOne(@Param('id', new ParseIntPipe()) id: number) {
+    return 'Uno Uno uno';
   }
 
   @Delete(':id')
