@@ -15,7 +15,7 @@ export class Professional {
   @Column()
   name: string;
 
-  @OneToOne(() => Staff)
+  @OneToOne(() => Staff, { nullable: false })
   @JoinColumn()
   staff_type: Staff;
 
