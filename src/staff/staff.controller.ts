@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { CreateStaffDto } from './dtos/create-staff.dto';
 import { StaffService } from './staff.service';
-import { FindByInputStaffDto } from './dtos/findByInput-staff.dto';
+import { SearchQuerysStaff } from './dtos/searchQueryStaff';
 import { Staff } from './entities/staff.entity';
 import { UpdateStaffDto } from './dtos/update-staff.dto';
 
@@ -25,7 +25,7 @@ export class StaffController {
   }
 
   @Get()
-  findAll(@Query() query: FindByInputStaffDto) {
+  findAll(@Query() query: SearchQuerysStaff) {
     return query.name
       ? this.staffService.findByInput(query.name)
       : this.staffService.getAll();

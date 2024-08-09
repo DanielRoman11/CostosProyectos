@@ -41,9 +41,9 @@ export class StaffService {
     return query.getMany();
   }
 
-  public async findByInput(name: string) {
+  public async findByInput(search_value: string) {
     const query = this.staffBaseQuery().where({
-      name: ILike(`%${name}%`),
+      name: ILike(`%${search_value}%`),
     });
     this.logger.debug(query.getQuery());
     return await query.getMany();

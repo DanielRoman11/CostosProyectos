@@ -1,6 +1,6 @@
 import { IsOptional } from "class-validator";
 
-export class FindByInputStaffDto{
+export class SearchQuerysStaff{
 	@IsOptional()
 	name?: string
 }
