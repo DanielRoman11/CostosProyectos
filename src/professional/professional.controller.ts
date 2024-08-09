@@ -27,7 +27,7 @@ export class ProfessionalController {
 
   @Get()
   findAll(@Query() input?: SearchQueryProfessional) {
-    return Object.keys(input).length > 0
+    return input.name
       ? this.professionalService.findByInput(input.name)
       : this.professionalService.findAll();
   }
