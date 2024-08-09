@@ -63,4 +63,9 @@ export class StaffService {
       name: input.name.toLocaleLowerCase(),
     });
   }
+
+  public async delete(id: Pick<Staff, 'id'>) {
+    const staff = await this.findOne(id);
+    return await this.staffRepo.delete(staff);
+  }
 }

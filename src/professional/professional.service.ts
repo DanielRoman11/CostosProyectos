@@ -4,6 +4,7 @@ import { ILike, Repository } from 'typeorm';
 import { Professional } from './entities/profesional.entity';
 import { CreateProfessionalDto } from './dto/create-professional.dto';
 import { StaffService } from 'src/staff/staff.service';
+import { UpdateProfessionalDto } from './dto/update-professional.dto';
 
 @Injectable()
 export class ProfessionalService {
@@ -39,5 +40,27 @@ export class ProfessionalService {
     return await query.getMany();
   }
 
-	
+  public async findOne(id: Pick<Professional, 'id'>) {
+    const query = this.baseQuery().where('id = :id', { id });
+    this.logger.debug(query.getQuery());
+    return await query.getOneOrFail();
+  }
+
+  public async updateProfessional(
+    input: UpdateProfessionalDto,
+    id: Pick<Professional, 'id'>,
+  ) {
+    const professional = await this.findOne(id);
+    const newStaff = await this.staffService.findOne(input.staff_id);
+    return await this.professionalRepo.save({
+      ...professional,
+      ...input,
+      staff_id: newStaff,
+    });
+  }
+
+  public async deleteProfessional(id: Pick<Professional, 'id'>) {
+    const professional = await this.findOne(id);
+    return await this.professionalRepo.delete(professional);
+  }
 }

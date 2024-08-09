@@ -42,7 +42,7 @@ export class StaffController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return `This action removes a #${id} cat`;
+  remove(@Param('id') id: Pick<Staff, 'id'>) {
+    return this.staffService.delete(id);
   }
 }
