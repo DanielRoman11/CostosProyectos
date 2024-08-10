@@ -27,7 +27,7 @@ export class ProfessionalController {
 
   @Get()
   findAll(@Query() input?: SearchQueryProfessional) {
-    return input.name
+    return input && input.name
       ? this.professionalService.findByInput(input.name)
       : this.professionalService.findAll();
   }

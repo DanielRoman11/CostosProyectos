@@ -3,7 +3,7 @@ import constants from '../shared/constants';
 import { ILike, Repository } from 'typeorm';
 import { Professional } from './entities/profesional.entity';
 import { CreateProfessionalDto } from './dto/create-professional.dto';
-import { StaffService } from 'src/staff/staff.service';
+import { StaffService } from '../staff/staff.service';
 import { UpdateProfessionalDto } from './dto/update-professional.dto';
 
 @Injectable()
@@ -16,7 +16,9 @@ export class ProfessionalService {
   ) {}
 
   private baseQuery() {
-    return this.professionalRepo.createQueryBuilder('p');
+    return this.professionalRepo
+      .createQueryBuilder('p')
+      .orderBy('p.id', 'DESC');
   }
 
   public async createProfessional(input: CreateProfessionalDto) {
