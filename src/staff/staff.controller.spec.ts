@@ -29,7 +29,7 @@ describe('StaffController', () => {
         .spyOn(staffService, 'getAll')
         .mockImplementation(async () => result);
 
-      expect(await staffController.findAll({ name: '' })).toEqual(result);
+      expect(await staffController.findAll()).toEqual(result);
       expect(spy).toHaveBeenCalledTimes(1);
     });
   });
@@ -37,7 +37,10 @@ describe('StaffController', () => {
   describe('Find All Staff with queries string', () => {
     it('should return an array of staff matching the query name', async () => {
       const result: Staff[] = [{ id: 1, name: 'soyuntest' }];
-      const emptyResult: Staff[] = [];
+      const emptyResult: Staff[] = [
+        { id: 1, name: 'soyuntest' },
+        { id: 2, name: 'example' },
+      ];
 
       const spy = jest
         .spyOn(staffService, 'findByInput')

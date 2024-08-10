@@ -25,8 +25,8 @@ export class StaffController {
   }
 
   @Get()
-  findAll(@Query() query: SearchQuerysStaff) {
-    return query.name
+  findAll(@Query() query?: SearchQuerysStaff) {
+    return query && query.name
       ? this.staffService.findByInput(query.name)
       : this.staffService.getAll();
   }

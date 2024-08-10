@@ -4,6 +4,7 @@ import { AppService } from './app.service';
 import { ProfessionalModule } from './professional/professional.module';
 import { StaffModule } from './staff/staff.module';
 import { ConfigModule } from '@nestjs/config';
+import { SuppliesModule } from './supplies/supplies.module';
 
 @Module({
   imports: [ConfigModule.forRoot({
@@ -11,7 +12,7 @@ import { ConfigModule } from '@nestjs/config';
 		envFilePath: process.env.NODE_ENV === 'dev'
 			? `.env.${process.env.NODE_ENV}`
 			: '.env'
-	}), ProfessionalModule, StaffModule],
+	}), ProfessionalModule, StaffModule, SuppliesModule],
   controllers: [AppController],
   providers: [AppService],
 })
