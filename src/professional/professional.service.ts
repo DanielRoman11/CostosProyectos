@@ -51,13 +51,15 @@ export class ProfessionalService {
   public async updateProfessional(
     input: UpdateProfessionalDto,
     id: Pick<Professional, 'id'>,
-  ) {
+  ): Promise<Professional> {
     const professional = await this.findOne(id);
-    const newStaff = await this.staffService.findOne(input.staff_id);
+
     return await this.professionalRepo.save({
       ...professional,
       ...input,
-      staff_id: newStaff,
+      staff_id: input.staff_id
+        ? await this.staffService.findOne(input.staff_id)
+        : professional.staff_type,
     });
   }
 

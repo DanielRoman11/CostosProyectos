@@ -5,6 +5,9 @@ import { Professional } from './entities/profesional.entity';
 import { StaffService } from '../staff/staff.service';
 import { StaffController } from '../staff/staff.controller';
 import { Staff } from '../staff/entities/staff.entity';
+import { PickKeysByType } from 'typeorm/common/PickKeysByType';
+import { UpdateProfessionalDto } from './dto/update-professional.dto';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 
 describe('Professional Controller', () => {
   let professionalController: ProfessionalController;
@@ -21,7 +24,8 @@ describe('Professional Controller', () => {
       where: jest.fn().mockReturnThis(),
       orderBy: jest.fn().mockReturnThis(),
       getQuery: jest.fn().mockReturnValue('SELECT * FROM some_table'),
-      getMany: jest.fn().mockResolvedValue([]),
+      getMany: jest.fn().mockResolvedValue([] as Professional[]),
+      getOneOrFail: jest.fn().mockRejectedValue({} as Professional),
     } as unknown as jest.Mocked<SelectQueryBuilder<Professional>>;
 
     professionalRepo = {
@@ -77,6 +81,44 @@ describe('Professional Controller', () => {
         result,
       );
       expect(await professionalController.findAll()).not.toEqual(result);
+      expect(spy).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('update a professional', () => {
+    it('should update a professional', () => {
+      const staff: Staff = { id: 1, name: 'TestStaff' };
+      const result: Professional = {
+        id: 1,
+        name: 'NewTestName',
+        staff_type: staff,
+        unit_price: '15.02',
+      };
+
+      const spy = jest
+        .spyOn(professionalService, 'updateProfessional')
+        .mockImplementation(
+          async (input: UpdateProfessionalDto, id: Pick<Professional, 'id'>) =>
+            result,
+        );
+
+      expect(
+        professionalController.findProfessional(
+          <PickKeysByType<Professional, 'id'>>1,
+        ),
+      ).toHaveBeenCalledTimes(1);
+
+      expect(
+        professionalController.update(
+          {
+            name: 'NewTestName',
+            profession: 'Test',
+            staff_id: staff,
+            unit_price: '15.02',
+          },
+          <PickKeysByType<Professional, 'id'>>1,
+        ),
+      ).toEqual(result);
       expect(spy).toHaveBeenCalledTimes(1);
     });
   });
