@@ -25,7 +25,7 @@ describe('Professional Controller', () => {
       orderBy: jest.fn().mockReturnThis(),
       getQuery: jest.fn().mockReturnValue('SELECT * FROM some_table'),
       getMany: jest.fn().mockResolvedValue([] as Professional[]),
-      getOneOrFail: jest.fn().mockRejectedValue({} as Professional),
+      getOneOrFail: jest.fn().mockResolvedValue({} as Professional),
     } as unknown as jest.Mocked<SelectQueryBuilder<Professional>>;
 
     professionalRepo = {
@@ -86,40 +86,38 @@ describe('Professional Controller', () => {
   });
 
   describe('update a professional', () => {
-    it('should update a professional', () => {
+    it('should update a professional', async () => {
       const staff: Staff = { id: 1, name: 'TestStaff' };
-      const result: Professional = {
+      const professionalBefore: Professional = {
         id: 1,
-        name: 'NewTestName',
+        name: 'Test',
         staff_type: staff,
+        unit_price: '20.00',
+      };
+
+      const professionalDto: UpdateProfessionalDto = {
+        name: 'New Name',
+        staff_id: { id: staff.id } as Staff,
         unit_price: '15.02',
       };
 
-      const spy = jest
+      const result: Professional = {
+        ...professionalBefore,
+        ...professionalDto,
+        staff_type: staff,
+      };
+
+      const spyUpdate = jest
         .spyOn(professionalService, 'updateProfessional')
-        .mockImplementation(
-          async (input: UpdateProfessionalDto, id: Pick<Professional, 'id'>) =>
-            result,
-        );
+        .mockResolvedValue(result);
 
-      expect(
-        professionalController.findProfessional(
-          <PickKeysByType<Professional, 'id'>>1,
-        ),
-      ).toHaveBeenCalledTimes(1);
+      const updatedProfessional = await professionalController.update(
+        professionalDto,
+        { id: 1 },
+      );
 
-      expect(
-        professionalController.update(
-          {
-            name: 'NewTestName',
-            profession: 'Test',
-            staff_id: staff,
-            unit_price: '15.02',
-          },
-          <PickKeysByType<Professional, 'id'>>1,
-        ),
-      ).toEqual(result);
-      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spyUpdate).toHaveBeenCalledTimes(1);
+      expect(updatedProfessional).toEqual(result);
     });
   });
 });
