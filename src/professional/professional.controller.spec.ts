@@ -1,170 +1,157 @@
-import { Repository, SelectQueryBuilder } from 'typeorm';
+import { Test } from '@nestjs/testing';
 import { ProfessionalController } from './professional.controller';
 import { ProfessionalService } from './professional.service';
 import { Professional } from './entities/profesional.entity';
-import { StaffService } from '../staff/staff.service';
-import { StaffController } from '../staff/staff.controller';
-import { Staff } from '../staff/entities/staff.entity';
-import { UpdateProfessionalDto } from './dto/update-professional.dto';
+import { Staff } from 'src/staff/entities/staff.entity';
+import exp from 'constants';
 import { CreateProfessionalDto } from './dto/create-professional.dto';
+import { UpdateProfessionalDto } from './dto/update-professional.dto';
 
-describe('Professional Controller', () => {
-  let professionalController: ProfessionalController;
-  let professionalService: ProfessionalService;
-  let professionalRepo: Repository<Professional>;
-  let staffService: StaffService;
-  let selectQb: SelectQueryBuilder<Professional>;
+describe('ProfessionalController', () => {
+  let controller: ProfessionalController;
+  let service: ProfessionalService;
+  let staff: Staff;
 
-  const staff: Staff = { id: 1, name: 'Test Staff' };
-  const staff2: Staff = { id: 2, name: 'Test Staff 2' };
+  beforeAll(() => {
+    staff = { id: 1, name: 'Test Staff' };
+  });
 
   beforeEach(async () => {
-    selectQb = {
-      where: jest.fn().mockReturnThis(),
-      orderBy: jest.fn().mockReturnThis(),
-      getQuery: jest.fn().mockReturnValue('SELECT * FROM some_table'),
-      getMany: jest.fn().mockResolvedValue([] as Professional[]),
-      getOneOrFail: jest.fn().mockResolvedValue({} as Professional),
-    } as unknown as jest.Mocked<SelectQueryBuilder<Professional>>;
+    const module = await Test.createTestingModule({
+      controllers: [ProfessionalController],
+      providers: [
+        {
+          provide: ProfessionalService,
+          useValue: {
+            createProfessional: jest.fn(),
+            findByInput: jest.fn(),
+            findAll: jest.fn(),
+            findOne: jest.fn(),
+            deleteProfessional: jest.fn(),
+          },
+        },
+      ],
+    }).compile();
 
-    professionalRepo = {
-      createQueryBuilder: jest.fn().mockReturnValue(selectQb),
-    } as unknown as Repository<Professional>;
-
-    professionalRepo = {
-      createQueryBuilder: jest.fn().mockReturnValue(selectQb),
-    } as unknown as Repository<Professional>;
-
-    professionalService = new ProfessionalService(
-      professionalRepo,
-      staffService,
-    );
-    professionalController = new ProfessionalController(professionalService);
+    service = module.get<ProfessionalService>(ProfessionalService);
+    controller = module.get<ProfessionalController>(ProfessionalController);
   });
 
-  it('should be defined', () => {
-    expect(StaffController).toBeDefined();
+  it('ProfessionalController should be defined', () => {
+    expect(controller).toBeDefined();
   });
 
-  describe('find all professional without queries string', () => {
-    it('should return an array of professionals', async () => {
+  describe('create', () => {
+    it('should create a Professional instance', async () => {
+      const professionalDto: CreateProfessionalDto = {
+        name: 'Test Name',
+        profession: 'Test Profession',
+        staff_id: staff,
+        unit_price: '10.20',
+      };
+
+      const result: Professional = {
+        ...professionalDto,
+        staff_type: staff,
+        id: 1,
+      };
+
+      jest
+        .spyOn(service, 'createProfessional')
+        .mockImplementation(async () => result);
+
+      expect(await controller.create(professionalDto)).toBe(result);
+      expect(service.createProfessional).toHaveBeenCalled();
+    });
+  });
+
+  describe('findAll', () => {
+    it('should return an array of professionals when no query is provided', async () => {
       const result: Professional[] = [
         {
           id: 1,
-          name: 'Test',
-          staff_type: staff,
-          unit_price: '10.51',
+          name: 'Test Name',
           profession: 'Test Profession',
-        },
-        {
-          id: 2,
-          name: 'Test2',
-          staff_type: staff2,
-          unit_price: '14.22',
-          profession: 'Test Profession 2',
+          staff_type: staff,
+          unit_price: '10.22',
         },
       ];
 
-      professionalService.findAll = jest.fn().mockImplementation(() => result);
+      jest.spyOn(service, 'findAll').mockImplementation(async () => result);
 
-      const spy = jest
-        .spyOn(professionalService, 'findAll')
-        .mockImplementation(async () => result);
-
-      expect(await professionalController.findAll()).toEqual(result);
-      expect(spy).toHaveBeenCalledTimes(1);
+      expect(await controller.findAll()).toBe(result);
+      expect(service.findAll).toHaveBeenCalled();
     });
   });
 
-  describe('find all professional with queries string', () => {
-    it('should return an array of professionals', async () => {
-      const professinal: Professional = {
-        id: 1,
-        name: 'Test',
-        staff_type: staff,
-        unit_price: '10.51',
-        profession: 'Test Profession',
-      };
+  describe('findAll with query', () => {
+    it('should return an array of professionals filtered by name', async () => {
+      const input = { name: 'Test name' };
+      const result: Professional[] = [
+        {
+          id: 1,
+          name: 'Test Name',
+          profession: 'Test Profession',
+          staff_type: staff,
+          unit_price: '10.22',
+        },
+      ];
 
-      const result: Professional[] = [{ ...professinal }];
+      jest.spyOn(service, 'findByInput').mockImplementation(async () => result);
 
-      const spy = (professionalService.findByInput = jest
-        .fn()
-        .mockImplementation((name) => {
-          return name ? result : [];
-        }));
-
-      expect(await professionalController.findAll({ name: 'test' })).toEqual(
-        result,
-      );
-      expect(await professionalController.findAll()).not.toEqual(result);
-      expect(spy).toHaveBeenCalledTimes(1);
+      expect(await controller.findAll(input)).toBe(result);
+      expect(service.findByInput).toHaveBeenCalled();
     });
   });
 
-  describe('create a new Professional instance', () => {
-    it('should create a new Professional instance', async () => {
-      const staff: Staff = { id: 1, name: 'Test Staff' };
-
-      const professionalDto: CreateProfessionalDto = {
-        name: 'Test',
-        profession: 'Test profession',
-        staff_id: staff,
-        unit_price: '12.0',
-      };
-
+  describe('findProfessional', () => {
+    it('should return a Professional by id', async () => {
       const result: Professional = {
         id: 1,
-        ...professionalDto,
+        name: 'Test Name',
+        profession: 'Test Profession',
         staff_type: staff,
+        unit_price: '10.20',
       };
 
-      const spy = jest
-        .spyOn(professionalService, 'createProfessional')
-        .mockImplementation(async (input: CreateProfessionalDto) => result);
+      jest.spyOn(service, 'findOne').mockImplementation(async () => result);
 
-      expect(await professionalController.create(professionalDto)).toEqual(
-        result,
-      );
-      expect(spy).toHaveBeenCalledTimes(1);
+      expect(await controller.findProfessional({ id: 1 })).toBe(result);
+      expect(service.findOne).toHaveBeenCalled();
     });
   });
 
-  describe('update a professional instance', () => {
-    it('should update a professional', async () => {
-      const staff: Staff = { id: 1, name: 'TestStaff' };
-      const professionalBefore: Professional = {
-        id: 1,
-        name: 'Test',
-        profession: 'Test Profession',
-        staff_type: staff,
-        unit_price: '20.00',
-      };
-
+  describe('update', () => {
+    it('should update a Professional instance', async () => {
       const professionalDto: UpdateProfessionalDto = {
-        name: 'New Name',
-        staff_id: { id: staff.id } as Staff,
-        profession: 'New Profession',
-        unit_price: '15.02',
+        name: 'Test Name',
+        profession: 'Test Profession',
+        staff_id: staff,
+        unit_price: '10.20',
       };
 
       const result: Professional = {
-        ...professionalBefore,
-        ...professionalDto,
+        id: 1,
+        name: 'Test Name',
+        profession: 'Test Profession',
         staff_type: staff,
+        unit_price: '10.20',
       };
 
-      const spyUpdate = jest
-        .spyOn(professionalService, 'updateProfessional')
-        .mockResolvedValue(result);
+      expect(await controller.update(professionalDto, { id: 1 })).toBe(result);
+      expect(service.createProfessional).toHaveBeenCalled();
+    });
+  });
 
-      const updatedProfessional = await professionalController.update(
-        professionalDto,
-        { id: 1 },
-      );
+  describe('deleteProfessional', () => {
+    it('should delete a Professional from the database', async () => {
+      const spy = jest
+        .spyOn(service, 'deleteProfessional')
+        .mockResolvedValue(undefined);
 
-      expect(spyUpdate).toHaveBeenCalledTimes(1);
-      expect(updatedProfessional).toEqual(result);
+      await controller.delete({ id: 1 });
+
+      expect(spy).toHaveBeenCalled();
     });
   });
 });
