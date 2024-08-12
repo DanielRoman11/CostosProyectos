@@ -1,7 +1,8 @@
 const constants = {
   dataSource: 'DATA_SOURCE',
   professional: 'PROFESIONAL',
-	staff: 'STAFF',
+  staff: 'STAFF',
+  supplies: 'SUPPLIES',
 };
 
 export default constants;

@@ -6,8 +6,14 @@ export class Supply {
   id: number;
 
   @Column()
-  material: string;
+  name: string;
+
+  @Column()
+  description: string;
 
   @Column('decimal', { scale: 2 })
   unit_price: string;
+
+  @Column()
+  category: string;
 }
