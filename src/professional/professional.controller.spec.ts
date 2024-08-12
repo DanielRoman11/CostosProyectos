@@ -5,9 +5,8 @@ import { Professional } from './entities/profesional.entity';
 import { StaffService } from '../staff/staff.service';
 import { StaffController } from '../staff/staff.controller';
 import { Staff } from '../staff/entities/staff.entity';
-import { PickKeysByType } from 'typeorm/common/PickKeysByType';
 import { UpdateProfessionalDto } from './dto/update-professional.dto';
-import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { CreateProfessionalDto } from './dto/create-professional.dto';
 
 describe('Professional Controller', () => {
   let professionalController: ProfessionalController;
@@ -50,8 +49,20 @@ describe('Professional Controller', () => {
   describe('find all professional without queries string', () => {
     it('should return an array of professionals', async () => {
       const result: Professional[] = [
-        { id: 1, name: 'Test', staff_type: staff, unit_price: '10.51' },
-        { id: 2, name: 'Test2', staff_type: staff2, unit_price: '14.22' },
+        {
+          id: 1,
+          name: 'Test',
+          staff_type: staff,
+          unit_price: '10.51',
+          profession: 'Test Profession',
+        },
+        {
+          id: 2,
+          name: 'Test2',
+          staff_type: staff2,
+          unit_price: '14.22',
+          profession: 'Test Profession 2',
+        },
       ];
 
       professionalService.findAll = jest.fn().mockImplementation(() => result);
@@ -67,9 +78,15 @@ describe('Professional Controller', () => {
 
   describe('find all professional with queries string', () => {
     it('should return an array of professionals', async () => {
-      const result: Professional[] = [
-        { id: 1, name: 'Test', staff_type: staff, unit_price: '10.51' },
-      ];
+      const professinal: Professional = {
+        id: 1,
+        name: 'Test',
+        staff_type: staff,
+        unit_price: '10.51',
+        profession: 'Test Profession',
+      };
+
+      const result: Professional[] = [{ ...professinal }];
 
       const spy = (professionalService.findByInput = jest
         .fn()
@@ -85,12 +102,41 @@ describe('Professional Controller', () => {
     });
   });
 
-  describe('update a professional', () => {
+  describe('create a new Professional instance', () => {
+    it('should create a new Professional instance', async () => {
+      const staff: Staff = { id: 1, name: 'Test Staff' };
+
+      const professionalDto: CreateProfessionalDto = {
+        name: 'Test',
+        profession: 'Test profession',
+        staff_id: staff,
+        unit_price: '12.0',
+      };
+
+      const result: Professional = {
+        id: 1,
+        ...professionalDto,
+        staff_type: staff,
+      };
+
+      const spy = jest
+        .spyOn(professionalService, 'createProfessional')
+        .mockImplementation(async (input: CreateProfessionalDto) => result);
+
+      expect(await professionalController.create(professionalDto)).toEqual(
+        result,
+      );
+      expect(spy).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('update a professional instance', () => {
     it('should update a professional', async () => {
       const staff: Staff = { id: 1, name: 'TestStaff' };
       const professionalBefore: Professional = {
         id: 1,
         name: 'Test',
+        profession: 'Test Profession',
         staff_type: staff,
         unit_price: '20.00',
       };
@@ -98,6 +144,7 @@ describe('Professional Controller', () => {
       const professionalDto: UpdateProfessionalDto = {
         name: 'New Name',
         staff_id: { id: staff.id } as Staff,
+        profession: 'New Profession',
         unit_price: '15.02',
       };
 

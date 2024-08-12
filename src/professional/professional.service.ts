@@ -21,7 +21,9 @@ export class ProfessionalService {
       .orderBy('p.id', 'DESC');
   }
 
-  public async createProfessional(input: CreateProfessionalDto) {
+  public async createProfessional(
+    input: CreateProfessionalDto,
+  ): Promise<Professional> {
     const staff = await this.staffService.findOne(input.staff_id);
     if (!staff)
       throw new NotFoundException('No se encontró el tipo de personal');
