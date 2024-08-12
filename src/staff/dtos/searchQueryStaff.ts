@@ -1,6 +1,6 @@
-import { IsOptional } from "class-validator";
+import { IsOptional } from 'class-validator';
 
-export class SearchQuerysStaff{
-	@IsOptional()
-	name?: string
+export class SearchQuerysStaff {
+  @IsOptional()
+  name?: string;
 }

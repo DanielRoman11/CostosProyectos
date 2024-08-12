@@ -1,5 +1,5 @@
 import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
-import constants from '../shared/constants';
+import constants from '../common/shared/constants';
 import { ILike, Repository } from 'typeorm';
 import { Professional } from './entities/profesional.entity';
 import { CreateProfessionalDto } from './dto/create-professional.dto';

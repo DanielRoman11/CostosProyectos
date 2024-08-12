@@ -1,5 +1,5 @@
 import { DataSource } from 'typeorm';
-import constants from '../shared/constants';
+import constants from '../common/shared/constants';
 import { Supply } from './entities/supply.entity';
 
 export const SupplyProviders = [

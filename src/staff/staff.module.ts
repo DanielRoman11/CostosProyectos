@@ -5,9 +5,9 @@ import { StaffController } from './staff.controller';
 import { DatabaseModule } from '../database/database.module';
 
 @Module({
-	imports: [DatabaseModule],
-	controllers: [StaffController],
+  imports: [DatabaseModule],
+  controllers: [StaffController],
   providers: [...StaffProvider, StaffService],
-	exports: [StaffService],
+  exports: [StaffService],
 })
 export class StaffModule {}

@@ -6,13 +6,12 @@ import {
   Patch,
   Param,
   Delete,
-  ParseIntPipe,
 } from '@nestjs/common';
 import { SuppliesService } from './supplies.service';
 import { CreateSupplyDto } from './dto/create-supply.dto';
 import { UpdateSupplyDto } from './dto/update-supply.dto';
 import { Supply } from './entities/supply.entity';
-import { ParseIntIfNumberPipe } from 'src/pipes/parse-int-if-number.pipe';
+import { ParseIntIfNumberPipe } from '../common/pipes/parse-int-if-number.pipe';
 
 @Controller('supplies')
 export class SuppliesController {

@@ -1,7 +1,7 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { CreateSupplyDto } from './dto/create-supply.dto';
 import { UpdateSupplyDto } from './dto/update-supply.dto';
-import constants from '../shared/constants';
+import constants from '../common/shared/constants';
 import { Repository, SelectQueryBuilder } from 'typeorm';
 import { Supply } from './entities/supply.entity';
 

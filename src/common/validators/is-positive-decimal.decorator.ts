@@ -17,7 +17,7 @@ class IsPositiveDecimalConstraint implements ValidatorConstraintInterface {
 }
 
 export function IsPositiveDecimal(validationOptions?: ValidationOptions) {
-  return function (object: Object, propertyName: string) {
+  return function (object: object, propertyName: string) {
     registerDecorator({
       name: 'isPositiveDecimal',
       target: object.constructor,

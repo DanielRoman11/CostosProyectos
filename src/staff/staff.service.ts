@@ -4,7 +4,7 @@ import {
   Injectable,
   Logger,
 } from '@nestjs/common';
-import constants from '../shared/constants';
+import constants from '../common/shared/constants';
 import { ILike, Repository } from 'typeorm';
 import { Staff } from './entities/staff.entity';
 import { CreateStaffDto } from './dtos/create-staff.dto';

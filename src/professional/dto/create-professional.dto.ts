@@ -1,6 +1,6 @@
 import { IsDecimal, IsNotEmpty, Length } from 'class-validator';
 import { Staff } from '../../staff/entities/staff.entity';
-import { IsPositiveDecimal } from '../../validators/is-positive-decimal.decorator';
+import { IsPositiveDecimal } from '../../common/validators/is-positive-decimal.decorator';
 
 export class CreateProfessionalDto {
   @IsNotEmpty({ message: 'El nombre no puede estar vacio' })

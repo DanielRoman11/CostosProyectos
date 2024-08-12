@@ -3,7 +3,6 @@ import { StaffController } from './staff.controller';
 import { StaffService } from './staff.service';
 import { Staff } from './entities/staff.entity';
 import { PickKeysByType } from 'typeorm/common/PickKeysByType';
-import { UpdateStaffDto } from './dtos/update-staff.dto';
 
 describe('StaffController', () => {
   let staffController: StaffController;
@@ -63,7 +62,7 @@ describe('StaffController', () => {
 
       const spy = jest
         .spyOn(staffService, 'findOne')
-        .mockImplementation(async (id: Pick<Staff, 'id'>) => result);
+        .mockImplementation(async () => result);
 
       expect(
         await staffController.findOne(<PickKeysByType<Staff, 'id'>>1),
@@ -78,9 +77,7 @@ describe('StaffController', () => {
 
       const spy = jest
         .spyOn(staffService, 'update')
-        .mockImplementation(
-          async (input: UpdateStaffDto, id: Pick<Staff, 'id'>) => result,
-        );
+        .mockImplementation(async () => result);
 
       expect(
         await staffController.update(

@@ -26,6 +26,7 @@ describe('ProfessionalController', () => {
             findByInput: jest.fn(),
             findAll: jest.fn(),
             findOne: jest.fn(),
+            updateProfessional: jest.fn(),
             deleteProfessional: jest.fn(),
           },
         },
@@ -137,8 +138,12 @@ describe('ProfessionalController', () => {
         unit_price: '10.20',
       };
 
+      jest
+        .spyOn(service, 'updateProfessional')
+        .mockImplementation(async () => result);
+
       expect(await controller.update(professionalDto, { id: 1 })).toBe(result);
-      expect(service.createProfessional).toHaveBeenCalled();
+      expect(service.updateProfessional).toHaveBeenCalled();
     });
   });
 

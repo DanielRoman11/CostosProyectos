@@ -1,5 +1,5 @@
 import { IsDecimal, IsNotEmpty } from 'class-validator';
-import { IsPositiveDecimal } from '../../validators/is-positive-decimal.decorator';
+import { IsPositiveDecimal } from '../../common/validators/is-positive-decimal.decorator';
 
 export class CreateSupplyDto {
   @IsNotEmpty({ message: 'El nombre no puede estar vacío' })

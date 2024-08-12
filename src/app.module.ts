@@ -7,12 +7,18 @@ import { ConfigModule } from '@nestjs/config';
 import { SuppliesModule } from './supplies/supplies.module';
 
 @Module({
-  imports: [ConfigModule.forRoot({
-		isGlobal: true,
-		envFilePath: process.env.NODE_ENV === 'dev'
-			? `.env.${process.env.NODE_ENV}`
-			: '.env'
-	}), ProfessionalModule, StaffModule, SuppliesModule],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath:
+        process.env.NODE_ENV === 'dev'
+          ? `.env.${process.env.NODE_ENV}`
+          : '.env',
+    }),
+    ProfessionalModule,
+    StaffModule,
+    SuppliesModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
