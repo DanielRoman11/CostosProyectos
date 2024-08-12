@@ -3,6 +3,7 @@ const constants = {
   professional: 'PROFESIONAL',
   staff: 'STAFF',
   supplies: 'SUPPLIES',
+  category: 'CATEGORY',
 };
 
 export default constants;

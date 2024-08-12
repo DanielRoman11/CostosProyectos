@@ -4,6 +4,7 @@ import { UpdateSupplyDto } from './dto/update-supply.dto';
 import constants from '../common/shared/constants';
 import { Repository, SelectQueryBuilder } from 'typeorm';
 import { Supply } from './entities/supply.entity';
+import { CategoriesService } from 'src/categories/categories.service';
 
 @Injectable()
 export class SuppliesService {
@@ -11,14 +12,21 @@ export class SuppliesService {
   constructor(
     @Inject(constants.supplies)
     private supplyRepo: Repository<Supply>,
+    private categoryService: CategoriesService,
   ) {}
 
   private baseQuery(): SelectQueryBuilder<Supply> {
     return this.supplyRepo.createQueryBuilder('sp');
   }
 
-  async create(createSupplyDto: CreateSupplyDto) {
-    return await this.supplyRepo.save(createSupplyDto);
+  public async create(createSupplyDto: CreateSupplyDto) {
+    const category = await this.categoryService.findOne(
+      createSupplyDto.category,
+    );
+    return await this.supplyRepo.save({
+      ...createSupplyDto,
+      category_id: category,
+    });
   }
 
   async findAll() {

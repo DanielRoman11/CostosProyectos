@@ -1,5 +1,6 @@
 import { IsDecimal, IsNotEmpty } from 'class-validator';
 import { IsPositiveDecimal } from '../../common/validators/is-positive-decimal.decorator';
+import { Category } from '../../categories/entities/category.entity';
 
 export class CreateSupplyDto {
   @IsNotEmpty({ message: 'El nombre no puede estar vacío' })
@@ -19,5 +20,5 @@ export class CreateSupplyDto {
   unit_price: string;
 
   @IsNotEmpty()
-  category;
+  category: Category;
 }

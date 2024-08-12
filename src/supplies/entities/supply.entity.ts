@@ -1,4 +1,12 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Category } from 'src/categories/entities/category.entity';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  OneToOne,
+  PrimaryGeneratedColumn,
+  Relation,
+} from 'typeorm';
 
 @Entity()
 export class Supply {
@@ -14,6 +22,7 @@ export class Supply {
   @Column('decimal', { scale: 2 })
   unit_price: string;
 
-  @Column()
-  category: string;
+  @OneToOne(() => Category)
+  @JoinColumn()
+  category_id: Relation<Category>;
 }

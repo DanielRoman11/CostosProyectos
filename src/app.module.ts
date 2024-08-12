@@ -5,6 +5,7 @@ import { ProfessionalModule } from './professional/professional.module';
 import { StaffModule } from './staff/staff.module';
 import { ConfigModule } from '@nestjs/config';
 import { SuppliesModule } from './supplies/supplies.module';
+import { CategoriesModule } from './categories/categories.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { SuppliesModule } from './supplies/supplies.module';
     ProfessionalModule,
     StaffModule,
     SuppliesModule,
+    CategoriesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
