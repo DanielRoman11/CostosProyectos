@@ -3,7 +3,6 @@ import { ProfessionalController } from './professional.controller';
 import { ProfessionalService } from './professional.service';
 import { Professional } from './entities/profesional.entity';
 import { Staff } from 'src/staff/entities/staff.entity';
-import exp from 'constants';
 import { CreateProfessionalDto } from './dto/create-professional.dto';
 import { UpdateProfessionalDto } from './dto/update-professional.dto';
 
