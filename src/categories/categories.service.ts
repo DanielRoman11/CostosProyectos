@@ -33,7 +33,10 @@ export class CategoriesService {
     return await query.getOneOrFail();
   }
 
-  public async update(id: Pick<Category, 'id'>, updateCategoryDto: UpdateCategoryDto) {
+  public async update(
+    id: Pick<Category, 'id'>,
+    updateCategoryDto: UpdateCategoryDto,
+  ) {
     const category = this.findOne(id);
     return await this.categoryRepo.save({
       ...category,
