@@ -4,6 +4,7 @@ const constants = {
   staff: 'STAFF',
   supplies: 'SUPPLIES',
   category: 'CATEGORY',
+  project: 'PROJECT',
 };
 
 export default constants;

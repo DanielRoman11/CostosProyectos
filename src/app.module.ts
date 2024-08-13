@@ -6,6 +6,7 @@ import { StaffModule } from './staff/staff.module';
 import { ConfigModule } from '@nestjs/config';
 import { SuppliesModule } from './supplies/supplies.module';
 import { CategoriesModule } from './categories/categories.module';
+import { ProjectsModule } from './projects/projects.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { CategoriesModule } from './categories/categories.module';
     StaffModule,
     SuppliesModule,
     CategoriesModule,
+    ProjectsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
