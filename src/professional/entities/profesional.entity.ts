@@ -21,12 +21,12 @@ export class Professional {
   @Column()
   profession: string;
 
+  @Column('decimal', { scale: 2 })
+  unit_price: string;
+
   @OneToOne(() => Staff, { nullable: false, cascade: true })
   @JoinColumn()
   staff_type: Relation<Staff>;
-
-  @Column('decimal', { scale: 2 })
-  unit_price: string;
 
   @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;

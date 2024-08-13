@@ -5,6 +5,9 @@ import { Professional } from './entities/profesional.entity';
 import { CreateProfessionalDto } from './dto/create-professional.dto';
 import { StaffService } from '../staff/staff.service';
 import { UpdateProfessionalDto } from './dto/update-professional.dto';
+import { ProfessionalCostDetails } from './entities/professional-cost-detail.entity';
+import { CreateProfessionalCostDetailDto } from './dto/create-professional-cost.dto';
+import { ProjectsService } from 'src/projects/projects.service';
 
 @Injectable()
 export class ProfessionalService {
@@ -12,7 +15,11 @@ export class ProfessionalService {
   constructor(
     @Inject(constants.professional)
     private professionalRepo: Repository<Professional>,
+    @Inject(constants.professional_cost)
+    private professionalCostRepo: Repository<ProfessionalCostDetails>,
+
     private staffService: StaffService,
+    private projectService: ProjectsService,
   ) {}
 
   private baseQuery() {
@@ -51,6 +58,14 @@ export class ProfessionalService {
     return await query.getOneOrFail();
   }
 
+  public async findByIds(ids: Pick<Professional, 'id'>[]) {
+    const query = this.baseQuery().where('id IN (:...ids)', {
+      ids: ids.map((p) => p.id),
+    });
+    this.logger.debug(query.getQuery());
+    return await query.getMany();
+  }
+
   public async updateProfessional(
     input: UpdateProfessionalDto,
     id: Pick<Professional, 'id'>,
@@ -69,5 +84,43 @@ export class ProfessionalService {
   public async deleteProfessional(id: Pick<Professional, 'id'>) {
     const professional = await this.findOne(id);
     return await this.professionalRepo.delete(professional);
+  }
+
+  private costBaseQuery() {
+    return this.professionalCostRepo
+      .createQueryBuilder('pc')
+      .orderBy('pc.id', 'DESC');
+  }
+
+  public async findAllProfessionalCost() {
+    const query = this.costBaseQuery().leftJoinAndSelect(
+      'pc.professional',
+      'professional',
+    );
+
+    this.logger.debug(query.getQuery());
+    return await query.getMany();
+  }
+
+  public async createProfessionalCost(input: CreateProfessionalCostDetailDto) {
+    const [professionals, project] = await Promise.all([
+      this.findByIds(input.professional_ids),
+      this.projectService.findOne(input.project),
+    ]);
+
+    const total_cost = professionals
+      .reduce((total, prof) => {
+        const unitPrice = parseFloat(prof.unit_price);
+        const qty = parseFloat(input.quantity);
+        return total + unitPrice * qty;
+      }, 0)
+      .toFixed(2);
+
+    return await this.professionalCostRepo.save({
+      ...input,
+      project,
+      professionals,
+      total_cost,
+    });
   }
 }

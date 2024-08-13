@@ -12,8 +12,8 @@ export abstract class CostDetail {
   @Column()
   unit: string;
 
-  @Column('int')
-  quantity: number;
+  @Column('decimal', { scale: 2 })
+  quantity: string;
 
   @Column('decimal', { scale: 2 })
   total_cost: string;
