@@ -11,8 +11,6 @@ export class ProfessionalCostDetailController {
     return this.professionalService.createProfessionalCost(input);
   }
 
-  @Get()
-  findAll() {
-    return this.professionalService.findAllProfessionalCost();
-  }
+  @Get(':id')
+  findAll() {}
 }

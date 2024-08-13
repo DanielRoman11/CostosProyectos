@@ -18,6 +18,9 @@ export class Project {
   @Column()
   name: string;
 
+  @Column('decimal', { nullable: true })
+  budget: string;
+
   @OneToMany(() => ProfessionalCostDetails, (details) => details.project)
   professionalCostDetails: Relation<ProfessionalCostDetails[]>;
 

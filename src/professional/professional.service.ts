@@ -7,7 +7,7 @@ import { StaffService } from '../staff/staff.service';
 import { UpdateProfessionalDto } from './dto/update-professional.dto';
 import { ProfessionalCostDetails } from './entities/professional-cost-detail.entity';
 import { CreateProfessionalCostDetailDto } from './dto/create-professional-cost.dto';
-import { ProjectsService } from 'src/projects/projects.service';
+import { ProjectsService } from '../projects/projects.service';
 
 @Injectable()
 export class ProfessionalService {
@@ -59,9 +59,7 @@ export class ProfessionalService {
   }
 
   public async findByIds(ids: Pick<Professional, 'id'>[]) {
-    const query = this.baseQuery().where('id IN (:...ids)', {
-      ids: ids.map((p) => p.id),
-    });
+    const query = this.baseQuery().whereInIds(ids);
     this.logger.debug(query.getQuery());
     return await query.getMany();
   }
@@ -92,14 +90,16 @@ export class ProfessionalService {
       .orderBy('pc.id', 'DESC');
   }
 
-  public async findAllProfessionalCost() {
+  private findAllProfessionalCost() {
     const query = this.costBaseQuery().leftJoinAndSelect(
       'pc.professional',
       'professional',
     );
+    return query;
+  }
 
-    this.logger.debug(query.getQuery());
-    return await query.getMany();
+  public async findAllProfessionalCostById(id: Pick<Professional, 'id'>) {
+    const query = this.findAllProfessionalCost().where('pro.id = :id', { id });
   }
 
   public async createProfessionalCost(input: CreateProfessionalCostDetailDto) {

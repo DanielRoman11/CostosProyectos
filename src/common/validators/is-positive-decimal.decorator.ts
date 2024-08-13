@@ -1,3 +1,4 @@
+import { BadRequestException } from '@nestjs/common';
 import {
   registerDecorator,
   ValidationOptions,
@@ -12,7 +13,9 @@ class IsPositiveDecimalConstraint implements ValidatorConstraintInterface {
     return !isNaN(numberValue) && numberValue > 0;
   }
   defaultMessage?(): string {
-    throw new Error('El valor debe ser un número decimal positivo.');
+    throw new BadRequestException(
+      'El valor debe ser un número decimal positivo.',
+    );
   }
 }
 

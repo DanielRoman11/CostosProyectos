@@ -2,7 +2,7 @@ import { Inject, Injectable, Logger } from '@nestjs/common';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { Project } from './entities/project.entity';
-import constants from 'src/common/shared/constants';
+import constants from '../common/shared/constants';
 import { Repository } from 'typeorm';
 
 @Injectable()
@@ -13,20 +13,28 @@ export class ProjectsService {
     private projectRepo: Repository<Project>,
   ) {}
 
-  private baseQuey() {
-    return this.projectRepo.createQueryBuilder('pr').orderBy('pr.id', 'DESC');
+  private baseQuery() {
+    return this.projectRepo
+      .createQueryBuilder('pr')
+      .orderBy('pr.id', 'DESC')
+      .leftJoinAndSelect(
+        'pr.professionalCostDetails',
+        'professionalCostDetail',
+      );
   }
 
-  create(createProjectDto: CreateProjectDto) {
-    return 'This action adds a new project';
+  public async create(input: CreateProjectDto) {
+    return await this.projectRepo.save({ ...input });
   }
 
-  findAll() {
-    return `This action returns all projects`;
+  public async findAll() {
+    const query = this.baseQuery();
+    this.logger.debug(query.getQuery());
+    return await query.getMany();
   }
 
   public async findOne(id: Pick<Project, 'id'>) {
-    const query = this.baseQuey().where('pr.id = :id', { id });
+    const query = this.baseQuery().where('pr.id = :id', { id });
     this.logger.debug(query.getQuery());
     return await query.getOneOrFail();
   }
