@@ -23,15 +23,16 @@ export class StaffService {
   }
 
   public async create(input: CreateStaffDto) {
+    const clean_name = input.name.trim().toLocaleLowerCase();
     if (
       await this.staffBaseQuery()
-        .where('name = :name', { name: input.name.toLocaleLowerCase() })
+        .where('name = :name', { name: clean_name })
         .getExists()
     )
       throw new BadRequestException('Esta profesión ya existe.');
 
     return await this.staffRepo.save({
-      name: input.name.toLocaleLowerCase().trim(),
+      name: clean_name,
     });
   }
 
@@ -41,9 +42,10 @@ export class StaffService {
     return query.getMany();
   }
 
-  public async findByInput(search_value: string) {
+  public async findByInput(name: string) {
+    const clean_name = name.trim().toLocaleLowerCase();
     const query = this.staffBaseQuery().where({
-      name: ILike(`%${search_value}%`),
+      name: ILike(`%${clean_name}%`),
     });
     this.logger.debug(query.getQuery());
     return await query.getMany();

@@ -35,10 +35,27 @@ describe('StaffController', () => {
 
   describe('Find All Staff with queries string', () => {
     it('should return an array of staff matching the query name', async () => {
-      const result: Staff[] = [{ id: 1, name: 'soyuntest' }];
+      const result: Staff[] = [
+        {
+          id: 1,
+          name: 'soyuntest',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      ];
       const emptyResult: Staff[] = [
-        { id: 1, name: 'soyuntest' },
-        { id: 2, name: 'example' },
+        {
+          id: 1,
+          name: 'soyuntest',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          id: 2,
+          name: 'example',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
       ];
 
       const spy = jest
@@ -58,7 +75,12 @@ describe('StaffController', () => {
 
   describe('Find One Staff by id', () => {
     it('should return only one Staff object', async () => {
-      const result: Staff = { id: 1, name: 'Test' };
+      const result: Staff = {
+        id: 1,
+        name: 'Test',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
 
       const spy = jest
         .spyOn(staffService, 'findOne')
@@ -73,7 +95,12 @@ describe('StaffController', () => {
 
   describe('Update Staff', () => {
     it('should update an staff object', async () => {
-      const result: Staff = { id: 1, name: 'new name' };
+      const result: Staff = {
+        id: 1,
+        name: 'new name',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
 
       const spy = jest
         .spyOn(staffService, 'update')

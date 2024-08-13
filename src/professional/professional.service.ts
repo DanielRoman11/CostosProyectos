@@ -18,6 +18,7 @@ export class ProfessionalService {
   private baseQuery() {
     return this.professionalRepo
       .createQueryBuilder('p')
+      .leftJoinAndSelect('p.staff_type', 'staff')
       .orderBy('p.id', 'DESC');
   }
 

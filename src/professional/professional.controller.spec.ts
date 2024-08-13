@@ -12,7 +12,12 @@ describe('ProfessionalController', () => {
   let staff: Staff;
 
   beforeAll(() => {
-    staff = { id: 1, name: 'Test Staff' };
+    staff = {
+      id: 1,
+      name: 'Test Staff',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
   });
 
   beforeEach(async () => {
@@ -54,6 +59,8 @@ describe('ProfessionalController', () => {
         ...professionalDto,
         staff_type: staff,
         id: 1,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
 
       jest
@@ -74,6 +81,8 @@ describe('ProfessionalController', () => {
           profession: 'Test Profession',
           staff_type: staff,
           unit_price: '10.22',
+          createdAt: new Date(),
+          updatedAt: new Date(),
         },
       ];
 
@@ -94,6 +103,8 @@ describe('ProfessionalController', () => {
           profession: 'Test Profession',
           staff_type: staff,
           unit_price: '10.22',
+          createdAt: new Date(),
+          updatedAt: new Date(),
         },
       ];
 
@@ -112,6 +123,8 @@ describe('ProfessionalController', () => {
         profession: 'Test Profession',
         staff_type: staff,
         unit_price: '10.20',
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
 
       jest.spyOn(service, 'findOne').mockImplementation(async () => result);
@@ -136,6 +149,8 @@ describe('ProfessionalController', () => {
         profession: 'Test Profession',
         staff_type: staff,
         unit_price: '10.20',
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
 
       jest

@@ -11,7 +11,7 @@ import { CategoriesService } from './categories.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { Category } from './entities/category.entity';
-import { ParseIntIfNumberPipe } from 'src/common/pipes/parse-int-if-number.pipe';
+import { ParseIntIfNumberPipe } from '../common/pipes/parse-int-if-number.pipe';
 
 @Controller('categories')
 export class CategoriesController {

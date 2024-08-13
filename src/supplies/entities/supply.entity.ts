@@ -1,11 +1,13 @@
 import { Category } from 'src/categories/entities/category.entity';
 import {
   Column,
+  CreateDateColumn,
   Entity,
   JoinColumn,
   OneToOne,
   PrimaryGeneratedColumn,
   Relation,
+  UpdateDateColumn,
 } from 'typeorm';
 
 @Entity()
@@ -25,4 +27,10 @@ export class Supply {
   @OneToOne(() => Category)
   @JoinColumn()
   category_id: Relation<Category>;
+
+  @CreateDateColumn({ type: 'timestamptz' })
+  createdAt: Date;
+
+  @UpdateDateColumn({ type: 'timestamptz' })
+  updatedAt: Date;
 }
