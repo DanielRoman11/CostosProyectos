@@ -18,9 +18,6 @@ export class Professional {
   @Column()
   name: string;
 
-  @Column()
-  profession: string;
-
   @Column('decimal', { scale: 2 })
   unit_price: string;
 
