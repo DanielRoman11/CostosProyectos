@@ -1,4 +1,4 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import constants from '../common/shared/constants';
@@ -30,7 +30,12 @@ export class CategoriesService {
   public async findOne(id: Pick<Category, 'id'>) {
     const query = this.baseQuery().where('id = :id', { id });
     this.logger.debug(query.getQuery());
-    return await query.getOneOrFail();
+    return (
+      (await query.getOne()) ??
+      (() => {
+        throw new NotFoundException('No se encontró la categoría buscada');
+      })()
+    );
   }
 
   public async update(

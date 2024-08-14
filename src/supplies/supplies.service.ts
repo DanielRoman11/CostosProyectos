@@ -1,4 +1,4 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { CreateSupplyDto } from './dto/create-supply.dto';
 import { UpdateSupplyDto } from './dto/update-supply.dto';
 import constants from '../common/shared/constants';
@@ -38,7 +38,12 @@ export class SuppliesService {
   async findOne(id: Pick<Supply, 'id'>) {
     const query = this.baseQuery().where('id = :id', { id });
     this.logger.debug(query.getQuery());
-    return await query.getOneOrFail();
+    return (
+      (await query.getOne()) ??
+      (() => {
+        throw new NotFoundException('No se encontró el suministro buscado');
+      })()
+    );
   }
 
   async update(id: Pick<Supply, 'id'>, updateSupplyDto: UpdateSupplyDto) {

@@ -1,4 +1,10 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { Project } from './entities/project.entity';
@@ -17,10 +23,8 @@ export class ProjectsService {
     return this.projectRepo
       .createQueryBuilder('pr')
       .orderBy('pr.id', 'DESC')
-      .leftJoinAndSelect(
-        'pr.professionalCostDetails',
-        'professionalCostDetail',
-      );
+      .leftJoinAndSelect('pr.professionalCostDetails', 'professionalCostDetail')
+      .leftJoinAndSelect('pr.supplyCostDetails', 'supplyCostDetails');
   }
 
   public async create(input: CreateProjectDto) {
@@ -35,15 +39,21 @@ export class ProjectsService {
 
   public async findOne(id: Pick<Project, 'id'>) {
     const query = this.baseQuery().where('pr.id = :id', { id });
-    this.logger.debug(query.getQuery());
-    return await query.getOneOrFail();
+    process.env.NODE_ENV == 'dev' && this.logger.debug(query.getQuery());
+    return (
+      (await query.getOne()) ??
+      (() => {
+        throw new NotFoundException('No se encontró el proyecto buscado');
+      })()
+    );
   }
 
-  update(id: Pick<Project, 'id'>, updateProjectDto: UpdateProjectDto) {
-    return `This action updates a #${id} project`;
+  public async update(id: Pick<Project, 'id'>, input: UpdateProjectDto) {
+    const project = await this.findOne(id);
+    return await this.projectRepo.save({ ...project, ...input });
   }
 
-  remove(id: Pick<Project, 'id'>) {
-    return `This action removes a #${id} project`;
+  public async remove(id: Pick<Project, 'id'>) {
+    return await this.projectRepo.softDelete(id);
   }
 }

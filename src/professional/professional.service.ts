@@ -55,7 +55,12 @@ export class ProfessionalService {
   public async findOne(id: Pick<Professional, 'id'>) {
     const query = this.baseQuery().where('id = :id', { id });
     this.logger.debug(query.getQuery());
-    return await query.getOneOrFail();
+    return (
+      (await query.getOne()) ??
+      (() => {
+        throw new NotFoundException('No se encontró el profesional buscado');
+      })()
+    );
   }
 
   public async findByIds(ids: Pick<Professional, 'id'>[]) {

@@ -11,6 +11,7 @@ import { ProjectsService } from './projects.service';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { Project } from './entities/project.entity';
+import { ParseNumberOrUuidPipe } from 'src/common/pipes/parse-int-if-number.pipe';
 
 @Controller('project')
 export class ProjectsController {
@@ -27,13 +28,13 @@ export class ProjectsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: Pick<Project, 'id'>) {
+  findOne(@Param('id', ParseNumberOrUuidPipe) id: Pick<Project, 'id'>) {
     return this.projectsService.findOne(id);
   }
 
   @Patch(':id')
   update(
-    @Param('id') id: Pick<Project, 'id'>,
+    @Param('id', new ParseNumberOrUuidPipe()) id: Pick<Project, 'id'>,
     @Body() updateProjectDto: UpdateProjectDto,
   ) {
     return this.projectsService.update(id, updateProjectDto);

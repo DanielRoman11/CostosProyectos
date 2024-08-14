@@ -3,6 +3,7 @@ import {
   Inject,
   Injectable,
   Logger,
+  NotFoundException,
 } from '@nestjs/common';
 import constants from '../common/shared/constants';
 import { ILike, Repository } from 'typeorm';
@@ -53,8 +54,13 @@ export class StaffService {
 
   public async findOne(id: Pick<Staff, 'id'>) {
     const query = this.staffBaseQuery().where('id = :id', { id });
-    this.logger.debug(query.getQuery());
-    return await query.getOneOrFail();
+    process.env.NODE_ENV == 'dev' && this.logger.debug(query.getQuery());
+    return (
+      (await query.getOne()) ??
+      (() => {
+        throw new NotFoundException('No se encontró el proyecto buscado');
+      })()
+    );
   }
 
   public async update(input: UpdateStaffDto, id: Pick<Staff, 'id'>) {
