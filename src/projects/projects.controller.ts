@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  UsePipes,
 } from '@nestjs/common';
 import { ProjectsService } from './projects.service';
 import { CreateProjectDto } from './dto/create-project.dto';
@@ -28,7 +29,7 @@ export class ProjectsController {
   }
 
   @Get(':id')
-  findOne(@Param('id', ParseNumberOrUuidPipe) id: Pick<Project, 'id'>) {
+  findOne(@Param('id', new ParseNumberOrUuidPipe()) id: Pick<Project, 'id'>) {
     return this.projectsService.findOne(id);
   }
 
@@ -41,7 +42,7 @@ export class ProjectsController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: Pick<Project, 'id'>) {
+  remove(@Param('id', new ParseNumberOrUuidPipe()) id: Pick<Project, 'id'>) {
     return this.projectsService.remove(id);
   }
 }

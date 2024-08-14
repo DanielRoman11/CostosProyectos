@@ -3,6 +3,7 @@ import { SupplyCostDetails } from '../../supplies/entities/supply-cost-detail.en
 import {
   Column,
   CreateDateColumn,
+  DeleteDateColumn,
   Entity,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -32,4 +33,7 @@ export class Project {
 
   @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt: Date;
+
+  @DeleteDateColumn({ type: 'timestamptz' })
+  deleteAt: Date;
 }

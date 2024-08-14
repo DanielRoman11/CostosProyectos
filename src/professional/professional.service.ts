@@ -85,8 +85,7 @@ export class ProfessionalService {
   }
 
   public async deleteProfessional(id: Pick<Professional, 'id'>) {
-    const professional = await this.findOne(id);
-    return await this.professionalRepo.delete(professional);
+    return await this.professionalRepo.delete(id);
   }
 
   private costBaseQuery() {

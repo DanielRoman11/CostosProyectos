@@ -7,8 +7,10 @@ export class CreateProjectDto {
 
   @IsOptional()
   @IsDecimal(
-    { decimal_digits: '2' },
-    { message: 'El número debe ser un decimal' },
+    { decimal_digits: '2', locale: 'en-US' },
+    {
+      message: 'Debe ingresar un número decimal de 2 décimas',
+    },
   )
   @IsPositiveDecimal()
   budget?: string;

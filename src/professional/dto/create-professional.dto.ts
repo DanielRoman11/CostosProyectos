@@ -15,7 +15,7 @@ export class CreateProfessionalDto {
   @IsDecimal(
     { decimal_digits: '2', locale: 'en-US' },
     {
-      message: 'El precio unitario debe ser un número con 2 decimales',
+      message: 'Debe ingresar un número decimal de 2 décimas',
     },
   )
   @IsPositiveDecimal()

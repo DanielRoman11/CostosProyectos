@@ -5,15 +5,17 @@ import {
   Get,
   Logger,
   Param,
+  Patch,
   Post,
-  Put,
   Query,
+  UsePipes,
 } from '@nestjs/common';
 import { CreateProfessionalDto } from './dto/create-professional.dto';
 import { ProfessionalService } from './professional.service';
 import { SearchQueryProfessional } from './dto/searchQueryProfessional';
 import { UpdateProfessionalDto } from './dto/update-professional.dto';
 import { Professional } from './entities/profesional.entity';
+import { ParseNumberOrUuidPipe } from '../common/pipes/parse-int-if-number.pipe';
 
 @Controller('professional')
 export class ProfessionalController {
@@ -32,12 +34,14 @@ export class ProfessionalController {
       : this.professionalService.findAll();
   }
 
+  @UsePipes(ParseNumberOrUuidPipe)
   @Get(':id')
   findProfessional(@Param() id: Pick<Professional, 'id'>) {
     return this.professionalService.findOne(id);
   }
 
-  @Put(':id')
+  @UsePipes(ParseNumberOrUuidPipe)
+  @Patch(':id')
   update(
     @Body() input: UpdateProfessionalDto,
     @Param() id: Pick<Professional, 'id'>,
@@ -45,6 +49,7 @@ export class ProfessionalController {
     return this.professionalService.updateProfessional(input, id);
   }
 
+  @UsePipes(ParseNumberOrUuidPipe)
   @Delete(':id')
   delete(@Param() id: Pick<Professional, 'id'>) {
     return this.professionalService.deleteProfessional(id);
