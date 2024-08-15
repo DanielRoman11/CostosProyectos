@@ -4,14 +4,14 @@ import { IsPositiveDecimal } from '../../common/validators/is-positive-decimal.d
 
 export class CreateProfessionalDto {
   @IsNotEmpty({ message: 'El nombre no puede estar vacio' })
-  @Length(3, 15, { message: 'El tamaño debe ser de 3 a 15 caracteres' })
+  @Length(3, 50, { message: 'Nombre de 3 a 50 caracteres' })
   name: string;
 
   @IsNotEmpty({ message: 'El precio unitario no puede estar vacío' })
   @IsDecimal(
     { decimal_digits: '2', locale: 'en-US' },
     {
-      message: 'Precio debe ser de 2 décimas o sin decimas',
+      message: 'Precio debe ser un entero o tener 2 décimas',
     },
   )
   @IsPositiveDecimal()

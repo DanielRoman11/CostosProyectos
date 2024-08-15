@@ -4,8 +4,8 @@ import { Category } from '../../categories/entities/category.entity';
 
 export class CreateSupplyDto {
   @IsNotEmpty({ message: 'El nombre no puede estar vacío' })
-  @Length(3, 20, {
-    message: 'Nombre de 3 a 20 caracteres',
+  @Length(3, 50, {
+    message: 'Nombre de 3 a 50 caracteres',
   })
   name: string;
 
@@ -19,12 +19,12 @@ export class CreateSupplyDto {
   @IsDecimal(
     { decimal_digits: '2', locale: 'en-US' },
     {
-      message: 'Precio debe ser de 2 décimas o sin decimas',
+      message: 'Precio debe ser un entero o tener 2 décimas',
     },
   )
   @IsPositiveDecimal()
   unit_price: string;
 
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'La categoria no puede estar vacia' })
   category_id: Category;
 }
