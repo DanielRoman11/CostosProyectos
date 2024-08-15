@@ -58,7 +58,7 @@ export class StaffService {
     return (
       (await query.getOne()) ??
       (() => {
-        throw new NotFoundException('No se encontró el proyecto buscado');
+        throw new NotFoundException('No se encontró el rol buscado');
       })()
     );
   }

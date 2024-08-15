@@ -1,4 +1,10 @@
-import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import constants from '../common/shared/constants';
@@ -17,8 +23,11 @@ export class CategoriesService {
     return this.categoryRepo.createQueryBuilder('c');
   }
 
-  public async create(createCategoryDto: CreateCategoryDto) {
-    return await this.categoryRepo.save(createCategoryDto);
+  public async create(input: CreateCategoryDto) {
+    const clean_category = input.name.trim().toLocaleLowerCase();
+    if (await this.baseQuery().where({ name: clean_category }).getOne())
+      throw new BadRequestException('Esta categoria ya existe');
+    return await this.categoryRepo.save({ ...input, name: clean_category });
   }
 
   public async findAll() {
