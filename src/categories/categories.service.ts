@@ -37,7 +37,7 @@ export class CategoriesService {
   }
 
   public async findOne(id: Pick<Category, 'id'>) {
-    const query = this.baseQuery().where('id = :id', { id });
+    const query = this.baseQuery().where('c.id = :id', { id });
     this.logger.debug(query.getQuery());
     return (
       (await query.getOne()) ??
