@@ -38,7 +38,7 @@ export class ProfessionalService {
   private baseQuery() {
     return this.professionalRepo
       .createQueryBuilder('p')
-      .leftJoinAndSelect('p.staff_type', 'staff')
+      .leftJoinAndSelect('p.staff_id', 'staff')
       .orderBy('p.id', 'DESC');
   }
 
@@ -53,7 +53,7 @@ export class ProfessionalService {
       throw new NotFoundException('No se encontró el tipo de personal');
     return await this.professionalRepo.save({
       ...input,
-      staff_type: staff,
+      staff_id: staff,
       name: clean_name,
     });
   }
@@ -107,7 +107,7 @@ export class ProfessionalService {
     const professional = await this.findOne(id);
     const clean_name = input.name
       ? input.name.trim().toLocaleLowerCase()
-      : professional.name.trim().toLocaleLowerCase();
+      : professional.name;
 
     const isNameInUse = await this.findByExactInput(clean_name);
     if (isNameInUse && isNameInUse.name !== professional.name)
@@ -117,9 +117,9 @@ export class ProfessionalService {
       ...professional,
       ...input,
       name: clean_name,
-      staff_type: input.staff_id
+      staff_id: input.staff_id
         ? await this.staffService.findOne(input.staff_id)
-        : professional.staff_type,
+        : professional.staff_id,
     });
   }
 
