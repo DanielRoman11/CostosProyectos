@@ -13,9 +13,7 @@ class IsPositiveDecimalConstraint implements ValidatorConstraintInterface {
     return !isNaN(numberValue) && numberValue > 0;
   }
   defaultMessage?(): string {
-    throw new BadRequestException(
-      'El valor debe ser un número decimal positivo.',
-    );
+    return 'Ingrese un número decimal positivo';
   }
 }
 
