@@ -1,7 +1,8 @@
 const constants = {
   dataSource: 'DATA_SOURCE',
   professional: 'PROFESIONAL',
-  professional_cost: 'PROFESIONALCOST',
+  professional_cost: 'PROFESSIONAL_COST',
+  professional_item: 'PROFESSIONAL_ITEM',
   staff: 'STAFF',
   supplies: 'SUPPLIES',
   category: 'CATEGORY',
