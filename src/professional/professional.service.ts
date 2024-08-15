@@ -48,7 +48,7 @@ export class ProfessionalService {
     const clean_name = input.name.trim().toLocaleLowerCase();
     const staff = await this.staffService.findOne(input.staff_id);
     if (await this.findByExactInput(clean_name))
-      throw new BadRequestException('Este profesional ya esta registrado');
+      throw new BadRequestException('Este nombre ya lo usa otro profesional');
     if (!staff)
       throw new NotFoundException('No se encontró el tipo de personal');
     return await this.professionalRepo.save({
@@ -72,7 +72,7 @@ export class ProfessionalService {
     return await query.getMany();
   }
 
-  public async findByExactInput(search_value: string) {
+  private async findByExactInput(search_value: string) {
     const query = this.baseQuery().where('p.name = :name', {
       name: search_value,
     });
@@ -80,8 +80,11 @@ export class ProfessionalService {
     return await query.getOne();
   }
 
-  public async findOne(id: Pick<Professional, 'id'>) {
-    const query = this.baseQuery().where('p.id = :id', { id });
+  public async findOne(value: Pick<Professional, 'id'> | string) {
+    const query = this.baseQuery();
+    typeof value !== 'string'
+      ? query.orWhere('p.id = :id', { id: value })
+      : query.orWhere('p.name = :name', { name: value });
     this.logQuery(query);
     return (
       (await query.getOne()) ??
@@ -102,19 +105,26 @@ export class ProfessionalService {
     id: Pick<Professional, 'id'>,
   ): Promise<Professional> {
     const professional = await this.findOne(id);
+    const clean_name = input.name
+      ? input.name.trim().toLocaleLowerCase()
+      : professional.name.trim().toLocaleLowerCase();
+
+    const isNameInUse = await this.findByExactInput(clean_name);
+    if (isNameInUse && isNameInUse.name !== professional.name)
+      throw new BadRequestException('Este nombre ya lo usa otro profesional');
 
     return await this.professionalRepo.save({
       ...professional,
       ...input,
-      staff_id: input.staff_id
+      name: clean_name,
+      staff_type: input.staff_id
         ? await this.staffService.findOne(input.staff_id)
         : professional.staff_type,
     });
   }
 
   public async deleteProfessional(id: Pick<Professional, 'id'>) {
-    const professional = await this.findOne(id);
-    return await this.professionalRepo.delete(professional);
+    return await this.professionalRepo.delete(id);
   }
 
   private costBaseQuery() {
