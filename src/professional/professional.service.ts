@@ -1,4 +1,10 @@
-import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import constants from '../common/shared/constants';
 import { ILike, Repository, SelectQueryBuilder } from 'typeorm';
 import { Professional } from './entities/profesional.entity';
@@ -39,10 +45,17 @@ export class ProfessionalService {
   public async createProfessional(
     input: CreateProfessionalDto,
   ): Promise<Professional> {
+    const clean_name = input.name.trim().toLocaleLowerCase();
     const staff = await this.staffService.findOne(input.staff_id);
+    if (await this.findByExactInput(clean_name))
+      throw new BadRequestException('Este profesional ya esta registrado');
     if (!staff)
       throw new NotFoundException('No se encontró el tipo de personal');
-    return await this.professionalRepo.save({ ...input, staff_id: staff });
+    return await this.professionalRepo.save({
+      ...input,
+      staff_type: staff,
+      name: clean_name,
+    });
   }
 
   public async findAll() {
@@ -57,6 +70,14 @@ export class ProfessionalService {
     });
     this.logQuery(query);
     return await query.getMany();
+  }
+
+  public async findByExactInput(search_value: string) {
+    const query = this.baseQuery().where('p.name = :name', {
+      name: search_value,
+    });
+    this.logQuery(query);
+    return await query.getOne();
   }
 
   public async findOne(id: Pick<Professional, 'id'>) {

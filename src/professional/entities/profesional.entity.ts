@@ -4,7 +4,7 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
-  OneToOne,
+  ManyToOne,
   PrimaryGeneratedColumn,
   Relation,
   UpdateDateColumn,
@@ -21,7 +21,7 @@ export class Professional {
   @Column('decimal', { scale: 2 })
   unit_price: string;
 
-  @OneToOne(() => Staff, { nullable: false, cascade: true })
+  @ManyToOne(() => Staff, { nullable: false, cascade: true })
   @JoinColumn()
   staff_type: Relation<Staff>;
 
