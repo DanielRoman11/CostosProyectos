@@ -4,7 +4,6 @@ import {
   Delete,
   Get,
   Param,
-  ParseIntPipe,
   Post,
   Put,
   Query,
@@ -14,7 +13,7 @@ import { StaffService } from './staff.service';
 import { SearchQuerysStaff } from './dtos/searchQueryStaff';
 import { Staff } from './entities/staff.entity';
 import { UpdateStaffDto } from './dtos/update-staff.dto';
-import { ParseNumberOrUuidPipe } from 'src/common/pipes/parse-int-if-number.pipe';
+import { ParseNumberOrUuidPipe } from '../common/pipes/parse-int-if-number.pipe';
 
 @Controller('staff')
 export class StaffController {

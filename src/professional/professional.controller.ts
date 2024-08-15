@@ -8,7 +8,6 @@ import {
   Patch,
   Post,
   Query,
-  UsePipes,
 } from '@nestjs/common';
 import { CreateProfessionalDto } from './dto/create-professional.dto';
 import { ProfessionalService } from './professional.service';
@@ -35,7 +34,9 @@ export class ProfessionalController {
   }
 
   @Get(':id')
-  findProfessional(@Param('id', new ParseNumberOrUuidPipe()) id: Pick<Professional, 'id'>) {
+  findProfessional(
+    @Param('id', new ParseNumberOrUuidPipe()) id: Pick<Professional, 'id'>,
+  ) {
     return this.professionalService.findOne(id);
   }
 
@@ -48,7 +49,9 @@ export class ProfessionalController {
   }
 
   @Delete(':id')
-  delete(@Param('id', new ParseNumberOrUuidPipe()) id: Pick<Professional, 'id'>) {
+  delete(
+    @Param('id', new ParseNumberOrUuidPipe()) id: Pick<Professional, 'id'>,
+  ) {
     return this.professionalService.deleteProfessional(id);
   }
 }

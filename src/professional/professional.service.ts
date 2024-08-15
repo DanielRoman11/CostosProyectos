@@ -131,6 +131,8 @@ export class ProfessionalService {
   private costBaseQuery() {
     return this.professionalCostRepo
       .createQueryBuilder('pc')
+      .leftJoinAndSelect('pc.items', 'items')
+      .leftJoinAndSelect('items.professional', 'professional')
       .orderBy('pc.id', 'DESC');
   }
 
@@ -140,13 +142,53 @@ export class ProfessionalService {
       .leftJoinAndSelect('pc.professionals', 'professional');
   }
 
-  public async findCostForProfessionals() {
-    const query = this.findCostBaseQuery();
-    this.logQuery(query);
-    return await query.getMany();
+  public async createProfessionalCost(
+    input: CreateProfessionalCostDetailDto,
+    project_id: Pick<Project, 'id'>,
+  ) {
+    const professionals = await this.findByIds(
+      input.items.map((item) => item.professional),
+    );
+
+    const foundProfessionalIds = new Set(professionals.map((prof) => prof.id));
+    const missingProfessionals = input.items
+      .filter((item: any) => !foundProfessionalIds.has(item.professional))
+      .map((item) => item.professional);
+
+    if (missingProfessionals.length > 0) {
+      throw new NotFoundException(
+        `No se encontraron los siguientes profesionales: ${missingProfessionals.join(', ')}`,
+      );
+    }
+    console.log('LLEGA AQUI!!!!');
+    const project = await this.projectService.findOne(project_id);
+
+    const total_cost = professionals
+      .reduce((total, prof) => {
+        const unitPrice = parseFloat(prof.unit_price);
+        const qty = input.items.find(
+          (item: any) => item.professional === prof.id,
+        )?.quantity;
+
+        if (!qty) {
+          throw new Error(
+            `Cantidad no encontrada para el profesional con ID ${prof.id}`,
+          );
+        }
+
+        return total + unitPrice * parseFloat(qty);
+      }, 0)
+      .toFixed(2);
+
+    return await this.professionalCostRepo.save({
+      ...input,
+      project,
+      professionals,
+      total_cost,
+    });
   }
 
-  public async findCostBaseQueryById(id: Pick<ProfessionalCostDetails, 'id'>) {
+  public async findCosById(id: Pick<ProfessionalCostDetails, 'id'>) {
     const query = this.findCostBaseQuery().where('pro.id = :id', { id });
     this.logQuery(query);
     return (
@@ -157,25 +199,9 @@ export class ProfessionalService {
     );
   }
 
-  public async createProfessionalCost(input: CreateProfessionalCostDetailDto, project_id: Pick<Project, 'id'>) {
-    const [professionals, project] = await Promise.all([
-      this.findByIds(input.professionals.map(professional => professional.id)),
-      this.projectService.findOne(project_id),
-    ]);
-
-    const total_cost = professionals
-      .reduce((total, prof) => {
-        const unitPrice = parseFloat(prof.unit_price);
-        const qty = parseFloat(input.quantity);
-        return total + unitPrice * qty;
-      }, 0)
-      .toFixed(2);
-
-    return await this.professionalCostRepo.save({
-      ...input,
-      project,
-      professionals,
-      total_cost,
-    });
+  public async findAllProfessionalCost() {
+    const query = this.costBaseQuery();
+    this.logger.debug(query.getQuery());
+    return await query.getMany();
   }
 }

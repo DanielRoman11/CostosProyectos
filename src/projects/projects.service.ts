@@ -1,10 +1,4 @@
-import {
-  BadRequestException,
-  Inject,
-  Injectable,
-  Logger,
-  NotFoundException,
-} from '@nestjs/common';
+import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { Project } from './entities/project.entity';
@@ -24,6 +18,8 @@ export class ProjectsService {
       .createQueryBuilder('pr')
       .orderBy('pr.id', 'DESC')
       .leftJoinAndSelect('pr.professionalCostDetails', 'professionalCostDetail')
+      .leftJoinAndSelect('professionalCostDetail.items', 'professionalitem')
+      .leftJoinAndSelect('professionalitem.professional', 'professional')
       .leftJoinAndSelect('pr.supplyCostDetails', 'supplyCostDetails');
   }
 
@@ -39,13 +35,12 @@ export class ProjectsService {
 
   public async findOne(value: Pick<Project, 'id'> | string) {
     const query = this.baseQuery();
+    const clean_value = value.toString().trim();
     typeof value !== 'string'
       ? (() => {
           throw new NotFoundException('No se encontró el proyecto buscado');
         })()
-      : query
-          .where('pr.id = :value', { value })
-          .orWhere('pr.name = :value', { value });
+      : query.where('pr.id = :value::uuid', { value: clean_value });
 
     process.env.NODE_ENV == 'dev' && this.logger.debug(query.getQuery());
     return (

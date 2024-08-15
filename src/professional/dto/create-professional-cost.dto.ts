@@ -18,7 +18,7 @@ export class CreateProfessionalCostDetailDto {
   @ArrayNotEmpty({ message: 'Debe seleccionar al menos un profesional' })
   @ValidateNested({ each: true })
   @Type(() => ItemQuantityDto)
-  @UniqueArray('professional_id')
+  @UniqueArray('professional')
   items: ItemQuantityDto[];
 
   @IsNotEmpty({ message: 'La unidad de medida no puede estar vacía' })

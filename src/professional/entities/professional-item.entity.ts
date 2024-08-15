@@ -14,7 +14,7 @@ export class ProfessionalItem {
   id: number;
 
   @ManyToOne(() => Professional, { nullable: false })
-  professional_id: Relation<Professional>;
+  professional: Relation<Professional>;
 
   @ManyToOne(() => ProfessionalCostDetails, (costDetail) => costDetail.items, {
     nullable: false,

@@ -3,7 +3,7 @@ import { Professional } from '../entities/profesional.entity';
 
 export class ItemQuantityDto {
   @IsNotEmpty({ message: 'El ID del profesional no puede estar vacío' })
-  professional_id: Pick<Professional, 'id'>;
+  professional: Pick<Professional, 'id'>;
 
   @IsNotEmpty({ message: 'La cantidad no puede estar vacía' })
   @IsDecimal(

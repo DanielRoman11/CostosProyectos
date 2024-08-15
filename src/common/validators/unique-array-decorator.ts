@@ -1,5 +1,6 @@
 import {
   registerDecorator,
+  ValidationArguments,
   ValidationOptions,
   ValidatorConstraint,
   ValidatorConstraintInterface,
@@ -7,12 +8,12 @@ import {
 
 @ValidatorConstraint({ name: 'uniqueArray', async: false })
 class UniqueArrayConstraint implements ValidatorConstraintInterface {
-  constructor(private readonly property: string) {}
-
-  validate(items: any[]): boolean {
+  validate(items: any[], args: ValidationArguments): boolean {
+    const property = args.constraints[0];
     const seenValues = new Set();
+
     for (const item of items) {
-      const value = item[this.property];
+      const value = item[property];
       if (seenValues.has(value)) {
         return false;
       }
@@ -21,8 +22,9 @@ class UniqueArrayConstraint implements ValidatorConstraintInterface {
     return true;
   }
 
-  defaultMessage(): string {
-    return `Los valores del campo '${this.property}' no deben estar repetidos.`;
+  defaultMessage(args: ValidationArguments): string {
+    const property = args.constraints[0];
+    return `Los valores del campo '${property}' no deben estar repetidos.`;
   }
 }
 
@@ -30,14 +32,14 @@ export function UniqueArray(
   property: string,
   validationOptions?: ValidationOptions,
 ) {
-  return function (object: Object, propertyName: string) {
+  return function (object: object, propertyName: string) {
     registerDecorator({
       name: 'uniqueArray',
       target: object.constructor,
       propertyName: propertyName,
       options: validationOptions,
-      validator: UniqueArrayConstraint,
       constraints: [property],
+      validator: UniqueArrayConstraint,
     });
   };
 }
