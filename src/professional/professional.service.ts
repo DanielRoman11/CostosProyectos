@@ -14,6 +14,7 @@ import { UpdateProfessionalDto } from './dto/update-professional.dto';
 import { ProfessionalCostDetails } from './entities/professional-cost-detail.entity';
 import { CreateProfessionalCostDetailDto } from './dto/create-professional-cost.dto';
 import { ProjectsService } from '../projects/projects.service';
+import { Project } from '../projects/entities/project.entity';
 
 @Injectable()
 export class ProfessionalService {
@@ -156,10 +157,10 @@ export class ProfessionalService {
     );
   }
 
-  public async createProfessionalCost(input: CreateProfessionalCostDetailDto) {
+  public async createProfessionalCost(input: CreateProfessionalCostDetailDto, project_id: Pick<Project, 'id'>) {
     const [professionals, project] = await Promise.all([
-      this.findByIds(input.professional_ids),
-      this.projectService.findOne(input.project),
+      this.findByIds(input.professionals.map(professional => professional.id)),
+      this.projectService.findOne(project_id),
     ]);
 
     const total_cost = professionals
