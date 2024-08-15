@@ -9,7 +9,7 @@ export class CreateProjectDto {
   @IsDecimal(
     { decimal_digits: '2', locale: 'en-US' },
     {
-      message: 'Precio debe ser un entero o tener 2 décimas',
+      message: 'El precio debe ser un entero o tener 2 décimas',
     },
   )
   @IsPositiveDecimal()

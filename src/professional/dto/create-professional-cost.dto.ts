@@ -11,14 +11,14 @@ export class CreateProfessionalCostDetailDto {
   @IsDecimal(
     { decimal_digits: '2', locale: 'en-US' },
     {
-      message: 'Precio debe ser un entero o tener 2 décimas',
+      message: 'El precio debe ser un entero o tener 2 décimas',
     },
   )
   @IsPositiveDecimal()
   quantity: string;
 
   @IsNotEmpty({
-    message: 'Debe seleccionar los profesionales para calculos los costos',
+    message: 'Debe seleccionar los profesionales para calcular los costos',
   })
   professional_ids: Pick<Professional, 'id'>[];
 
