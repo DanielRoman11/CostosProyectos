@@ -11,7 +11,7 @@ export class CreateProfessionalCostDetailDto {
   @IsDecimal(
     { decimal_digits: '2', locale: 'en-US' },
     {
-      message: 'Debe ingresar un número decimal de 2 décimas',
+      message: 'Precio debe ser de 2 décimas o sin decimas',
     },
   )
   @IsPositiveDecimal()
