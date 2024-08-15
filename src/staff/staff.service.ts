@@ -20,7 +20,7 @@ export class StaffService {
   ) {}
 
   private staffBaseQuery() {
-    return this.staffRepo.createQueryBuilder('s');
+    return this.staffRepo.createQueryBuilder('s').orderBy('s.id', 'DESC');
   }
 
   public async create(input: CreateStaffDto) {
@@ -53,7 +53,7 @@ export class StaffService {
   }
 
   public async findOne(id: Pick<Staff, 'id'>) {
-    const query = this.staffBaseQuery().where('id = :id', { id });
+    const query = this.staffBaseQuery().where('s.id = :id', { id });
     process.env.NODE_ENV == 'dev' && this.logger.debug(query.getQuery());
     return (
       (await query.getOne()) ??

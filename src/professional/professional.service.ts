@@ -81,7 +81,7 @@ export class ProfessionalService {
   }
 
   public async findOne(id: Pick<Professional, 'id'>) {
-    const query = this.baseQuery().where('id = :id', { id });
+    const query = this.baseQuery().where('p.id = :id', { id });
     this.logQuery(query);
     return (
       (await query.getOne()) ??

@@ -34,24 +34,21 @@ export class ProfessionalController {
       : this.professionalService.findAll();
   }
 
-  @UsePipes(ParseNumberOrUuidPipe)
   @Get(':id')
-  findProfessional(@Param() id: Pick<Professional, 'id'>) {
+  findProfessional(@Param('id', new ParseNumberOrUuidPipe()) id: Pick<Professional, 'id'>) {
     return this.professionalService.findOne(id);
   }
 
-  @UsePipes(ParseNumberOrUuidPipe)
   @Patch(':id')
   update(
     @Body() input: UpdateProfessionalDto,
-    @Param() id: Pick<Professional, 'id'>,
+    @Param('id', new ParseNumberOrUuidPipe()) id: Pick<Professional, 'id'>,
   ) {
     return this.professionalService.updateProfessional(input, id);
   }
 
-  @UsePipes(ParseNumberOrUuidPipe)
   @Delete(':id')
-  delete(@Param() id: Pick<Professional, 'id'>) {
+  delete(@Param('id', new ParseNumberOrUuidPipe()) id: Pick<Professional, 'id'>) {
     return this.professionalService.deleteProfessional(id);
   }
 }
