@@ -1,6 +1,6 @@
 import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import constants from '../common/shared/constants';
-import { ILike, Repository } from 'typeorm';
+import { ILike, Repository, SelectQueryBuilder } from 'typeorm';
 import { Professional } from './entities/profesional.entity';
 import { CreateProfessionalDto } from './dto/create-professional.dto';
 import { StaffService } from '../staff/staff.service';
@@ -12,6 +12,7 @@ import { ProjectsService } from '../projects/projects.service';
 @Injectable()
 export class ProfessionalService {
   private readonly logger = new Logger(ProfessionalService.name);
+
   constructor(
     @Inject(constants.professional)
     private professionalRepo: Repository<Professional>,
@@ -21,6 +22,12 @@ export class ProfessionalService {
     private staffService: StaffService,
     private projectService: ProjectsService,
   ) {}
+
+  private logQuery(
+    query: SelectQueryBuilder<Professional | ProfessionalCostDetails>,
+  ) {
+    return process.env.NODE_ENV == 'dev' && this.logger.debug(query.getQuery());
+  }
 
   private baseQuery() {
     return this.professionalRepo
@@ -40,7 +47,7 @@ export class ProfessionalService {
 
   public async findAll() {
     const query = this.baseQuery();
-    this.logger.debug(query.getQuery());
+    this.logQuery(query);
     return await query.getMany();
   }
 
@@ -48,13 +55,13 @@ export class ProfessionalService {
     const query = this.baseQuery().where({
       name: ILike(`%${search_value}%`),
     });
-    this.logger.debug(query.getQuery());
+    this.logQuery(query);
     return await query.getMany();
   }
 
   public async findOne(id: Pick<Professional, 'id'>) {
     const query = this.baseQuery().where('id = :id', { id });
-    this.logger.debug(query.getQuery());
+    this.logQuery(query);
     return (
       (await query.getOne()) ??
       (() => {
@@ -65,7 +72,7 @@ export class ProfessionalService {
 
   public async findByIds(ids: Pick<Professional, 'id'>[]) {
     const query = this.baseQuery().whereInIds(ids);
-    this.logger.debug(query.getQuery());
+    this.logQuery(query);
     return await query.getMany();
   }
 
@@ -85,7 +92,8 @@ export class ProfessionalService {
   }
 
   public async deleteProfessional(id: Pick<Professional, 'id'>) {
-    return await this.professionalRepo.delete(id);
+    const professional = await this.findOne(id);
+    return await this.professionalRepo.delete(professional);
   }
 
   private costBaseQuery() {
@@ -94,16 +102,27 @@ export class ProfessionalService {
       .orderBy('pc.id', 'DESC');
   }
 
-  private findAllProfessionalCost() {
-    const query = this.costBaseQuery().leftJoinAndSelect(
-      'pc.professional',
-      'professional',
-    );
-    return query;
+  private findCostBaseQuery(): SelectQueryBuilder<ProfessionalCostDetails> {
+    return this.costBaseQuery()
+      .orderBy('pc.id', 'DESC')
+      .leftJoinAndSelect('pc.professionals', 'professional');
   }
 
-  public async findAllProfessionalCostById(id: Pick<Professional, 'id'>) {
-    const query = this.findAllProfessionalCost().where('pro.id = :id', { id });
+  public async findCostForProfessionals() {
+    const query = this.findCostBaseQuery();
+    this.logQuery(query);
+    return await query.getMany();
+  }
+
+  public async findCostBaseQueryById(id: Pick<ProfessionalCostDetails, 'id'>) {
+    const query = this.findCostBaseQuery().where('pro.id = :id', { id });
+    this.logQuery(query);
+    return (
+      (await query.getOne()) ??
+      (() => {
+        throw new NotFoundException('No se encontró  buscada');
+      })()
+    );
   }
 
   public async createProfessionalCost(input: CreateProfessionalCostDetailDto) {

@@ -1,6 +1,8 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { ProfessionalService } from './professional.service';
 import { CreateProfessionalCostDetailDto } from './dto/create-professional-cost.dto';
+import { ParseNumberOrUuidPipe } from '../common/pipes/parse-int-if-number.pipe';
+import { ProfessionalCostDetails } from './entities/professional-cost-detail.entity';
 
 @Controller('/cost/professional')
 export class ProfessionalCostDetailController {
@@ -11,6 +13,16 @@ export class ProfessionalCostDetailController {
     return this.professionalService.createProfessionalCost(input);
   }
 
+  @Get()
+  findAll() {
+    return this.professionalService.findCostForProfessionals();
+  }
+
   @Get(':id')
-  findAll() {}
+  findOne(
+    @Param('id', new ParseNumberOrUuidPipe())
+    id: Pick<ProfessionalCostDetails, 'id'>,
+  ) {
+    return;
+  }
 }
