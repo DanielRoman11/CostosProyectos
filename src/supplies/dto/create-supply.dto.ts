@@ -20,5 +20,5 @@ export class CreateSupplyDto {
   unit_price: string;
 
   @IsNotEmpty()
-  category: Category;
+  category_id: Category;
 }
