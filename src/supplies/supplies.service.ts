@@ -26,14 +26,18 @@ export class SuppliesService {
   ) {}
 
   private baseQuery(): SelectQueryBuilder<Supply> {
-    return this.supplyRepo.createQueryBuilder('sp');
+    return this.supplyRepo
+      .createQueryBuilder('sp')
+      .orderBy('sp.id', 'DESC')
+      .leftJoinAndSelect('sp.category_id', 'category');
   }
 
   public async create(input: CreateSupplyDto) {
     const clean_name = input.name.trim().toLocaleLowerCase();
+
     const [category, supplyExist] = await Promise.all([
-      this.categoryService.findOne(input.category),
-      this.findOne(clean_name),
+      this.categoryService.findOne(input.category_id),
+      this.findByExactInput(clean_name),
     ]);
 
     if (supplyExist)
@@ -41,6 +45,8 @@ export class SuppliesService {
 
     return await this.supplyRepo.save({
       ...input,
+      name: clean_name,
+      description: input.description && input.description.trim(),
       category_id: category,
     });
   }
@@ -54,19 +60,19 @@ export class SuppliesService {
   public async findOne(value: Pick<Supply, 'id'> | string) {
     const query = this.baseQuery();
     typeof value !== 'string'
-      ? query.orWhere('s.id = :id', { id: value })
-      : query.orWhere('s.name = :name', { name: value });
+      ? query.orWhere('sp.id = :id', { id: value })
+      : query.orWhere('sp.name = :name', { name: value });
     this.logQuery(query);
     return (
       (await query.getOne()) ??
       (() => {
-        throw new NotFoundException('No se encontró el profesional buscado');
+        throw new NotFoundException('No se encontró la categoría buscada');
       })()
     );
   }
 
   private async findByExactInput(search_value: string) {
-    const query = this.baseQuery().where('s.name = :name', {
+    const query = this.baseQuery().where('sp.name = :name', {
       name: search_value,
     });
     this.logQuery(query);
@@ -90,8 +96,9 @@ export class SuppliesService {
       ...supply,
       ...input,
       name: clean_name,
-      category_id: input.category
-        ? await this.categoryService.findOne(input.category)
+      description: clean_description,
+      category_id: input.category_id
+        ? await this.categoryService.findOne(input.category_id)
         : supply.category_id,
     });
   }
