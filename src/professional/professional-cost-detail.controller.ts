@@ -4,7 +4,7 @@ import { CreateProfessionalCostDetailDto } from './dto/create-professional-cost.
 import { ParseNumberOrUuidPipe } from '../common/pipes/parse-int-if-number.pipe';
 import { ProfessionalCostDetails } from './entities/professional-cost-detail.entity';
 
-@Controller('/cost/professional')
+@Controller('/cost/professionals')
 export class ProfessionalCostDetailController {
   constructor(private professionalService: ProfessionalService) {}
 
