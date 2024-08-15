@@ -37,8 +37,16 @@ export class ProjectsService {
     return await query.getMany();
   }
 
-  public async findOne(id: Pick<Project, 'id'>) {
-    const query = this.baseQuery().where('pr.id = :id', { id });
+  public async findOne(value: Pick<Project, 'id'> | string) {
+    const query = this.baseQuery();
+    typeof value !== 'string'
+      ? (() => {
+          throw new NotFoundException('No se encontró el proyecto buscado');
+        })()
+      : query
+          .where('pr.id = :value', { value })
+          .orWhere('pr.name = :value', { value });
+
     process.env.NODE_ENV == 'dev' && this.logger.debug(query.getQuery());
     return (
       (await query.getOne()) ??
