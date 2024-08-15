@@ -18,7 +18,7 @@ export class Supply {
   @Column()
   name: string;
 
-  @Column()
+  @Column('text', { nullable: true })
   description: string;
 
   @Column('decimal', { scale: 2 })
