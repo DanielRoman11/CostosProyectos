@@ -13,7 +13,7 @@ export class SupplyItem {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Supply, { nullable: false })
+  @ManyToOne(() => Supply, { nullable: false, cascade: true })
   supply: Relation<Supply>;
 
   @ManyToOne(() => SupplyCostDetails, (costDetail) => costDetail.items, {

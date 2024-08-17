@@ -10,8 +10,12 @@ import { UpdateSupplyDto } from './dto/update-supply.dto';
 import constants from '../common/shared/constants';
 import { Repository, SelectQueryBuilder } from 'typeorm';
 import { Supply } from './entities/supply.entity';
-import { CategoriesService } from 'src/categories/categories.service';
+import { CategoriesService } from '../categories/categories.service';
 import { SupplyCostDetails } from './entities/supply-cost-detail.entity';
+import { CreateSupplyCostDetailDto } from './dto/create-supply-cost.dto';
+import { Project } from '../projects/entities/project.entity';
+import { ProjectsService } from 'src/projects/projects.service';
+import BigNumber from 'bignumber.js';
 
 @Injectable()
 export class SuppliesService {
@@ -22,32 +26,29 @@ export class SuppliesService {
   constructor(
     @Inject(constants.supplies)
     private supplyRepo: Repository<Supply>,
+    @Inject(constants.supplies_cost)
+    private supplyCostRepo: Repository<SupplyCostDetails>,
+
     private categoryService: CategoriesService,
+    private projectService: ProjectsService,
   ) {}
 
   private baseQuery(): SelectQueryBuilder<Supply> {
     return this.supplyRepo
       .createQueryBuilder('sp')
-      .orderBy('sp.id', 'DESC')
-      .leftJoinAndSelect('sp.category_id', 'category');
+      .orderBy('sp.updatedAt', 'DESC');
   }
 
   public async create(input: CreateSupplyDto) {
     const clean_name = input.name.trim().toLocaleLowerCase();
 
-    const [category, supplyExist] = await Promise.all([
-      this.categoryService.findOne(input.category_id),
-      this.findByExactInput(clean_name),
-    ]);
-
-    if (supplyExist)
+    if (await this.findByExactInput(clean_name))
       throw new BadRequestException('El nombre del suministro está en uso');
 
     return await this.supplyRepo.save({
       ...input,
       name: clean_name,
       description: input.description && input.description.trim(),
-      category_id: category,
     });
   }
 
@@ -97,13 +98,103 @@ export class SuppliesService {
       ...input,
       name: clean_name,
       description: clean_description,
-      category_id: input.category_id
-        ? await this.categoryService.findOne(input.category_id)
-        : supply.category_id,
     });
   }
 
   async remove(id: Pick<Supply, 'id'>) {
     return await this.supplyRepo.delete(id);
+  }
+
+  private costBaseQuery() {
+    return this.supplyCostRepo
+      .createQueryBuilder('sc')
+      .leftJoinAndSelect('sc.category', 'category')
+      .leftJoinAndSelect('sc.items', 'items')
+      .leftJoinAndSelect('items.supply', 'supply')
+      .orderBy('sc.updatedAt', 'DESC');
+  }
+
+  public async findAllSupplyCost() {
+    const query = this.costBaseQuery();
+    this.logger.debug(query.getQuery());
+    return await query.getMany();
+  }
+
+  public async findByIds(ids: Pick<Supply, 'id'>[]) {
+    const query = this.baseQuery().whereInIds(ids);
+    this.logQuery(query);
+    return await query.getMany();
+  }
+
+  public async createSupplyCost(
+    input: CreateSupplyCostDetailDto,
+    project_id: Pick<Project, 'id'>,
+  ) {
+    const supplies = await this.findByIds(
+      input.items.map((item) => item.supply),
+    );
+
+    const foundSuppliesIds = new Set(supplies.map((supply) => supply.id));
+    const missingsupplies = input.items
+      .filter((item: any) => !foundSuppliesIds.has(item.supply))
+      .map((item) => item.supply);
+
+    missingsupplies.length > 0 &&
+      (() => {
+        throw new NotFoundException(
+          `No se encontraron los siguientes suministros: ${missingsupplies.join(', ')}`,
+        );
+      })();
+
+    const [project, category] = await Promise.all([
+      this.projectService.findOne(project_id),
+      this.categoryService.findOne(input.category_id),
+    ]);
+
+    const total_cost = supplies
+      .reduce((total, supply) => {
+        const unit_price = new BigNumber(supply.unit_price);
+        const qty = new BigNumber(
+          input.items.find((item: any) => item.supply === supply.id)?.quantity,
+        );
+
+        if (!qty) {
+          throw new Error(
+            `Cantidad no encontrada para el suministro con ID ${supply.id}`,
+          );
+        }
+
+        console.log(
+          'Precio de: ',
+          supply.name,
+          ' ',
+          unit_price.times(qty).toFixed(2),
+          '\n',
+        );
+
+        return total.plus(unit_price.times(qty));
+      }, new BigNumber(0))
+      .toFixed(2);
+
+    console.log('Costo total', total_cost);
+
+    return await this.supplyCostRepo.save({
+      unit: input.unit,
+      total_cost,
+      items: input.items,
+      category,
+      project,
+    });
+  }
+
+  public async findCostById(id: Pick<SupplyCostDetails, 'id'>) {
+    const query = this.costBaseQuery().where('sc.id = :id', { id });
+    this.logQuery(query);
+    return (
+      (await query.getOne()) ??
+      (() => {
+        throw new NotFoundException('No se encontró el suministro buscado');
+      })()
+    );
   }
 }

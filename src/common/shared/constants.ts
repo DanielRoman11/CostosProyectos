@@ -5,6 +5,7 @@ const constants = {
   professional_item: 'PROFESSIONAL_ITEM',
   staff: 'STAFF',
   supplies: 'SUPPLIES',
+  supplies_cost: 'SUPPLIES_COST',
   category: 'CATEGORY',
   project: 'PROJECT',
 };

@@ -24,10 +24,6 @@ export class Supply {
   @Column('decimal', { scale: 2 })
   unit_price: string;
 
-  @ManyToOne(() => Category)
-  @JoinColumn()
-  category_id: Relation<Category>;
-
   @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;
 
