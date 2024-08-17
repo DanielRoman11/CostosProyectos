@@ -18,7 +18,7 @@ export class Professional {
   @Column()
   name: string;
 
-  @Column('decimal', { scale: 2 })
+  @Column('decimal')
   unit_price: string;
 
   @ManyToOne(() => Staff, { nullable: false, cascade: true })

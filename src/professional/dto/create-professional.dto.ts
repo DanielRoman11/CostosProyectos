@@ -1,4 +1,4 @@
-import { IsDecimal, IsNotEmpty, Length } from 'class-validator';
+import { IsDecimal, IsNotEmpty, IsString, Length } from 'class-validator';
 import { Staff } from '../../staff/entities/staff.entity';
 import { IsPositiveDecimal } from '../../common/validators/is-positive-decimal.decorator';
 
@@ -8,12 +8,8 @@ export class CreateProfessionalDto {
   name: string;
 
   @IsNotEmpty({ message: 'El precio unitario no puede estar vacío' })
-  @IsDecimal(
-    { decimal_digits: '2', locale: 'en-US' },
-    {
-      message: 'El precio debe ser un entero o tener 2 décimas',
-    },
-  )
+  @IsString({ message: 'El decimal debe ser una cadena de texto' })
+  @IsDecimal({}, { message: 'El precio debe ser un entero o decimal' })
   @IsPositiveDecimal()
   unit_price: string;
 

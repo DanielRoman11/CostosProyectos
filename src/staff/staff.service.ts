@@ -20,7 +20,9 @@ export class StaffService {
   ) {}
 
   private staffBaseQuery() {
-    return this.staffRepo.createQueryBuilder('s').orderBy('s.id', 'DESC');
+    return this.staffRepo
+      .createQueryBuilder('s')
+      .orderBy('s.updatedAt', 'DESC');
   }
 
   public async create(input: CreateStaffDto) {

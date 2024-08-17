@@ -22,6 +22,9 @@ export class Project {
   @Column('decimal', { nullable: true })
   budget: string;
 
+  @Column('decimal', { nullable: true })
+  total_cost: string;
+
   @OneToMany(() => ProfessionalCostDetails, (details) => details.project)
   professionalCostDetails: Relation<ProfessionalCostDetails[]>;
 

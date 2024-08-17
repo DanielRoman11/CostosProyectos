@@ -15,6 +15,7 @@ import { ProfessionalCostDetails } from './entities/professional-cost-detail.ent
 import { CreateProfessionalCostDetailDto } from './dto/create-professional-cost.dto';
 import { ProjectsService } from '../projects/projects.service';
 import { Project } from '../projects/entities/project.entity';
+import BigNumber from 'bignumber.js';
 
 @Injectable()
 export class ProfessionalService {
@@ -40,7 +41,7 @@ export class ProfessionalService {
     return this.professionalRepo
       .createQueryBuilder('p')
       .leftJoinAndSelect('p.staff_id', 'staff')
-      .orderBy('p.id', 'DESC');
+      .orderBy('p.updatedAt', 'DESC');
   }
 
   public async createProfessional(
@@ -133,13 +134,7 @@ export class ProfessionalService {
       .createQueryBuilder('pc')
       .leftJoinAndSelect('pc.items', 'items')
       .leftJoinAndSelect('items.professional', 'professional')
-      .orderBy('pc.id', 'DESC');
-  }
-
-  private findCostBaseQuery(): SelectQueryBuilder<ProfessionalCostDetails> {
-    return this.costBaseQuery()
-      .orderBy('pc.id', 'DESC')
-      .leftJoinAndSelect('pc.professionals', 'professional');
+      .orderBy('pc.updatedAt', 'DESC');
   }
 
   public async createProfessionalCost(
@@ -160,15 +155,16 @@ export class ProfessionalService {
         `No se encontraron los siguientes profesionales: ${missingProfessionals.join(', ')}`,
       );
     }
-    console.log('LLEGA AQUI!!!!');
     const project = await this.projectService.findOne(project_id);
 
     const total_cost = professionals
       .reduce((total, prof) => {
-        const unitPrice = parseFloat(prof.unit_price);
-        const qty = input.items.find(
-          (item: any) => item.professional === prof.id,
-        )?.quantity;
+        const unit_price = new BigNumber(prof.unit_price);
+        const qty = new BigNumber(
+          input.items.find(
+            (item: any) => item.professional === prof.id,
+          )?.quantity,
+        );
 
         if (!qty) {
           throw new Error(
@@ -176,20 +172,26 @@ export class ProfessionalService {
           );
         }
 
-        return total + unitPrice * parseFloat(qty);
-      }, 0)
+        return total.plus(unit_price.times(qty));
+      }, new BigNumber(0))
       .toFixed(2);
 
     return await this.professionalCostRepo.save({
       ...input,
       project,
-      professionals,
       total_cost,
+      professionals,
     });
   }
 
-  public async findCosById(id: Pick<ProfessionalCostDetails, 'id'>) {
-    const query = this.findCostBaseQuery().where('pro.id = :id', { id });
+  public async findAllProfessionalCost() {
+    const query = this.costBaseQuery();
+    this.logger.debug(query.getQuery());
+    return await query.getMany();
+  }
+
+  public async findCostById(id: Pick<ProfessionalCostDetails, 'id'>) {
+    const query = this.costBaseQuery().where('pc.id = :id', { id });
     this.logQuery(query);
     return (
       (await query.getOne()) ??
@@ -197,11 +199,5 @@ export class ProfessionalService {
         throw new NotFoundException('No se encontró  buscada');
       })()
     );
-  }
-
-  public async findAllProfessionalCost() {
-    const query = this.costBaseQuery();
-    this.logger.debug(query.getQuery());
-    return await query.getMany();
   }
 }

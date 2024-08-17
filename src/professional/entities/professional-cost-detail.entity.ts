@@ -5,7 +5,7 @@ import { ProfessionalItem } from './professional-item.entity';
 
 @Entity()
 export class ProfessionalCostDetails extends CostDetail {
-  @ManyToOne(() => Project, { nullable: false })
+  @ManyToOne(() => Project, { nullable: false, cascade: true })
   project: Relation<Project>;
 
   @OneToMany(() => ProfessionalItem, (items) => items.costDetail_id, {

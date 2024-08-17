@@ -28,6 +28,6 @@ export class ProfessionalCostDetailController {
     @Param('id', new ParseNumberOrUuidPipe())
     id: Pick<ProfessionalCostDetails, 'id'>,
   ) {
-    return this.professionalService.findCosById(id);
+    return this.professionalService.findCostById(id);
   }
 }

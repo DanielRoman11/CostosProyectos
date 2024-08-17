@@ -13,7 +13,7 @@ export class ProfessionalItem {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Professional, { nullable: false })
+  @ManyToOne(() => Professional, { nullable: false, cascade: true })
   professional: Relation<Professional>;
 
   @ManyToOne(() => ProfessionalCostDetails, (costDetail) => costDetail.items, {
