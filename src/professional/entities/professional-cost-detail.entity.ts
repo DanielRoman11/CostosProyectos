@@ -8,7 +8,7 @@ export class ProfessionalCostDetails extends CostDetail {
   @ManyToOne(() => Project, { nullable: false, cascade: true })
   project: Relation<Project>;
 
-  @OneToMany(() => ProfessionalItem, (items) => items.costDetail_id, {
+  @OneToMany(() => ProfessionalItem, (items) => items.costDetail, {
     cascade: true,
   })
   items: Relation<ProfessionalItem[]>;

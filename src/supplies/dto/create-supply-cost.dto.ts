@@ -3,6 +3,7 @@ import {
   IsArray,
   ArrayNotEmpty,
   ValidateNested,
+  IsString,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ItemQuantityDto } from './create-supply-item.dto';
@@ -27,5 +28,6 @@ export class CreateSupplyCostDetailDto {
   category_id: Pick<Category, 'id'>;
 
   @IsNotEmpty({ message: 'La unidad de medida no puede estar vacía' })
+  @IsString({ message: 'La unidad debe ser una cadena de texto' })
   unit: string;
 }

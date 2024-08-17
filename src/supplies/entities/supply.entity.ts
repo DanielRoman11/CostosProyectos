@@ -3,10 +3,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  JoinColumn,
-  ManyToOne,
   PrimaryGeneratedColumn,
-  Relation,
   UpdateDateColumn,
 } from 'typeorm';
 
@@ -21,7 +18,7 @@ export class Supply {
   @Column('text', { nullable: true })
   description: string;
 
-  @Column('decimal', { scale: 2 })
+  @Column('decimal')
   unit_price: string;
 
   @CreateDateColumn({ type: 'timestamptz' })

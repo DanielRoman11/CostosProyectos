@@ -1,6 +1,7 @@
 import { IsDecimal, IsNotEmpty, IsString, Length } from 'class-validator';
 import { Staff } from '../../staff/entities/staff.entity';
 import { IsPositiveDecimal } from '../../common/validators/is-positive-decimal.decorator';
+import { Type } from 'class-transformer';
 
 export class CreateProfessionalDto {
   @IsNotEmpty({ message: 'El nombre no puede estar vacio' })
@@ -14,5 +15,6 @@ export class CreateProfessionalDto {
   unit_price: string;
 
   @IsNotEmpty({ message: 'Debes escoger un rol para este professional' })
+  @Type(() => Staff)
   staff_id: Pick<Staff, 'id'>;
 }

@@ -1,8 +1,10 @@
 import { IsNotEmpty, IsDecimal, IsString } from 'class-validator';
 import { Professional } from '../entities/profesional.entity';
+import { Type } from 'class-transformer';
 
 export class ItemQuantityDto {
   @IsNotEmpty({ message: 'El ID del profesional no puede estar vacío' })
+  @Type(() => Professional)
   professional: Pick<Professional, 'id'>;
 
   @IsNotEmpty({ message: 'La cantidad no puede estar vacía' })

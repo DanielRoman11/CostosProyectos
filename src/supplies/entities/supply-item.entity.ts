@@ -19,8 +19,8 @@ export class SupplyItem {
   @ManyToOne(() => SupplyCostDetails, (costDetail) => costDetail.items, {
     nullable: false,
   })
-  costDetail_id: Relation<SupplyCostDetails>;
+  costDetail: Relation<SupplyCostDetails>;
 
-  @Column('decimal', { scale: 2 })
+  @Column('decimal')
   quantity: string;
 }

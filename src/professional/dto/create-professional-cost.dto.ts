@@ -3,6 +3,7 @@ import {
   IsArray,
   ArrayNotEmpty,
   ValidateNested,
+	IsString,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ItemQuantityDto } from './create-professional-item.dto';
@@ -22,5 +23,6 @@ export class CreateProfessionalCostDetailDto {
   items: ItemQuantityDto[];
 
   @IsNotEmpty({ message: 'La unidad de medida no puede estar vacía' })
+	@IsString({ message: 'La unidad debe ser una cadena de texto' })
   unit: string;
 }

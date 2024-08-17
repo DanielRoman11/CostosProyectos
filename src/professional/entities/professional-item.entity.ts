@@ -19,8 +19,8 @@ export class ProfessionalItem {
   @ManyToOne(() => ProfessionalCostDetails, (costDetail) => costDetail.items, {
     nullable: false,
   })
-  costDetail_id: Relation<ProfessionalCostDetails>;
+  costDetail: Relation<ProfessionalCostDetails>;
 
-  @Column('decimal', { scale: 2 })
+  @Column('decimal')
   quantity: string;
 }

@@ -12,7 +12,7 @@ export abstract class CostDetail {
   @Column()
   unit: string;
 
-  @Column('decimal', { scale: 2 })
+  @Column('decimal')
   total_cost: string;
 
   @CreateDateColumn({ type: 'timestamptz' })

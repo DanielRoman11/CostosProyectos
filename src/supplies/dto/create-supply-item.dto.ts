@@ -1,8 +1,10 @@
 import { IsNotEmpty, IsDecimal, IsString } from 'class-validator';
 import { Supply } from '../entities/supply.entity';
+import { Type } from 'class-transformer';
 
 export class ItemQuantityDto {
   @IsNotEmpty({ message: 'El ID del suministro no puede estar vacío' })
+  @Type(() => Supply)
   supply: Pick<Supply, 'id'>;
 
   @IsNotEmpty({ message: 'La cantidad no puede estar vacía' })

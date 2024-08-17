@@ -6,7 +6,7 @@ import { Category } from '../../categories/entities/category.entity';
 
 @Entity()
 export class SupplyCostDetails extends CostDetail {
-  @OneToMany(() => SupplyItem, (items) => items.costDetail_id, {
+  @OneToMany(() => SupplyItem, (items) => items.costDetail, {
     cascade: true,
   })
   items: Relation<SupplyItem[]>;
