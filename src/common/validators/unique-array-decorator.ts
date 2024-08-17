@@ -9,6 +9,9 @@ import {
 @ValidatorConstraint({ name: 'uniqueArray', async: false })
 class UniqueArrayConstraint implements ValidatorConstraintInterface {
   validate(items: any[], args: ValidationArguments): boolean {
+    if (!Array.isArray(items)) {
+      return true;
+    }
     const property = args.constraints[0];
     const seenValues = new Set();
 
