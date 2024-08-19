@@ -117,7 +117,7 @@ export class SuppliesService {
 
   public async findAllSupplyCost() {
     const query = this.costBaseQuery();
-    this.logger.debug(query.getQuery());
+    this.logQuery(query);
     const all = await query.getMany();
     return all.map((cost_details) => {
       return this.calculate_supply_cost(cost_details);
