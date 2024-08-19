@@ -26,6 +26,7 @@ export class ProjectsService {
       .leftJoinAndSelect('professionalCostDetail.items', 'professionalitem')
       .leftJoinAndSelect('professionalitem.professional', 'professional')
       .leftJoinAndSelect('pr.supplyCostDetails', 'supplyCostDetails')
+      .leftJoinAndSelect('supplyCostDetails.category', 'category')
       .leftJoinAndSelect('supplyCostDetails.items', 'supplyitem')
       .leftJoinAndSelect('supplyitem.supply', 'supply');
   }
