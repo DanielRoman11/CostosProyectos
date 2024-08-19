@@ -22,13 +22,13 @@ export class ProjectsService {
     return this.projectRepo
       .createQueryBuilder('pr')
       .orderBy('pr.updatedAt', 'DESC')
-      .leftJoinAndSelect('pr.professionalCostDetails', 'professionalCostDetail')
-      .leftJoinAndSelect('professionalCostDetail.items', 'professionalitem')
-      .leftJoinAndSelect('professionalitem.professional', 'professional')
-      .leftJoinAndSelect('pr.supplyCostDetails', 'supplyCostDetails')
-      .leftJoinAndSelect('supplyCostDetails.category', 'category')
-      .leftJoinAndSelect('supplyCostDetails.items', 'supplyitem')
-      .leftJoinAndSelect('supplyitem.supply', 'supply');
+      .leftJoinAndSelect('pr.professionalCostDetails', 'pc')
+      .leftJoinAndSelect('pc.items', 'pi')
+      .leftJoinAndSelect('pi.professional', 'p')
+      .leftJoinAndSelect('pr.supplyCostDetails', 'sc')
+      .leftJoinAndSelect('sc.category', 'category')
+      .leftJoinAndSelect('sc.items', 'si')
+      .leftJoinAndSelect('si.supply', 's');
   }
 
   public async create(input: CreateProjectDto) {
