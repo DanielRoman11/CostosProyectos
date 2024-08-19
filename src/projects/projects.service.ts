@@ -30,39 +30,37 @@ export class ProjectsService {
     return await this.projectRepo.save({ ...input });
   }
 
-  private async calculate_tota_cost(projects: Project[]) {
-    return projects.map((project) => {
-      const professional_cost = project.professionalCostDetails.reduce(
-        (total, costDetail) => {
-          return total.plus(new BigNumber(costDetail.total_cost));
-        },
-        new BigNumber(0),
-      );
-      console.log(professional_cost.toFixed(2));
-      const supplies_cost = project.supplyCostDetails.reduce(
-        (total, costDetail) => {
-          console.log(
-            'COSTOS PARA ',
-            costDetail.category,
-            costDetail.total_cost,
-          );
-          return total.plus(new BigNumber(costDetail.total_cost));
-        },
-        new BigNumber(0),
-      );
-      console.log(supplies_cost.toFixed(2));
+  private calculate_project_cost(project: Project) {
+    const professional_cost = project.professionalCostDetails.reduce(
+      (total, costDetail) => {
+        return total.plus(new BigNumber(costDetail.total_cost));
+      },
+      new BigNumber(0),
+    );
+    console.log(professional_cost.toFixed(2));
+    const supplies_cost = project.supplyCostDetails.reduce(
+      (total, costDetail) => {
+        console.log('COSTOS PARA ', costDetail.category, costDetail.total_cost);
+        return total.plus(new BigNumber(costDetail.total_cost));
+      },
+      new BigNumber(0),
+    );
+    console.log(supplies_cost.toFixed(2));
 
-      project.total_cost = professional_cost.plus(supplies_cost).toFixed(2);
+    project.total_cost = professional_cost.plus(supplies_cost).toFixed(2);
 
-      return project;
-    });
+    return project;
+  }
+
+  private async calculate_total_cost(projects: Project[]) {
+    return projects.map((project) => this.calculate_project_cost(project));
   }
 
   public async findAll() {
     const query = this.baseQuery();
     this.logger.debug(query.getQuery());
     const projects = await query.getMany();
-    const new_cost = await this.calculate_tota_cost(projects);
+    const new_cost = await this.calculate_total_cost(projects);
     return new_cost;
   }
 

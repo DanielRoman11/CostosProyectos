@@ -190,14 +190,32 @@ export class ProfessionalService {
     return await query.getMany();
   }
 
+  private calculate_professional_cost(cost_details: ProfessionalCostDetails) {
+    cost_details.total_cost = cost_details.items
+      .reduce((total, items) => {
+        const qty = new BigNumber(items.quantity);
+        const professionalCost = new BigNumber(items.professional.unit_price);
+
+        return total.plus(professionalCost.times(qty));
+      }, new BigNumber(0))
+      .toFixed(2);
+    return cost_details;
+  }
+
   public async findCostById(id: Pick<ProfessionalCostDetails, 'id'>) {
     const query = this.costBaseQuery().where('pc.id = :id', { id });
     this.logQuery(query);
-    return (
+    const cost_details =
       (await query.getOne()) ??
       (() => {
-        throw new NotFoundException('No se encontró  buscada');
-      })()
-    );
+        throw new NotFoundException(
+          'No se encontraron los costos de los detalles de profesionales',
+        );
+      })();
+
+    const new_cost_details = this.calculate_professional_cost(cost_details);
+    return new_cost_details.total_cost === cost_details.total_cost
+      ? cost_details
+      : await this.professionalCostRepo.save(new_cost_details);
   }
 }
