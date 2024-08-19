@@ -19,6 +19,10 @@ export class CategoriesService {
     private categoryRepo: Repository<Category>,
   ) {}
 
+  private logQuery(query: SelectQueryBuilder<Category>) {
+    return process.env.NODE_ENV == 'dev' && this.logger.debug(query.getQuery());
+  }
+
   private baseQuery(): SelectQueryBuilder<Category> {
     return this.categoryRepo.createQueryBuilder('c');
   }
@@ -32,13 +36,13 @@ export class CategoriesService {
 
   public async findAll() {
     const query = this.baseQuery();
-    this.logger.debug(query.getQuery());
+    this.logQuery(query);
     return await query.getMany();
   }
 
   public async findOne(id: Pick<Category, 'id'>) {
     const query = this.baseQuery().where('c.id = :id', { id });
-    this.logger.debug(query.getQuery());
+    this.logQuery(query);
     return (
       (await query.getOne()) ??
       (() => {
@@ -51,7 +55,7 @@ export class CategoriesService {
     id: Pick<Category, 'id'>,
     updateCategoryDto: UpdateCategoryDto,
   ) {
-    const category = this.findOne(id);
+    const category = await this.findOne(id);
     return await this.categoryRepo.save({
       ...category,
       ...updateCategoryDto,

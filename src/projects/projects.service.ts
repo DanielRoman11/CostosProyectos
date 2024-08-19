@@ -3,7 +3,7 @@ import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { Project } from './entities/project.entity';
 import constants from '../common/shared/constants';
-import { Repository } from 'typeorm';
+import { Repository, SelectQueryBuilder } from 'typeorm';
 import BigNumber from 'bignumber.js';
 
 @Injectable()
@@ -13,6 +13,10 @@ export class ProjectsService {
     @Inject(constants.project)
     private projectRepo: Repository<Project>,
   ) {}
+
+  private logQuery(query: SelectQueryBuilder<Project>) {
+    return process.env.NODE_ENV == 'dev' && this.logger.debug(query.getQuery());
+  }
 
   private baseQuery() {
     return this.projectRepo
@@ -37,15 +41,12 @@ export class ProjectsService {
       },
       new BigNumber(0),
     );
-    console.log(professional_cost.toFixed(2));
     const supplies_cost = project.supplyCostDetails.reduce(
       (total, costDetail) => {
-        console.log('COSTOS PARA ', costDetail.category, costDetail.total_cost);
         return total.plus(new BigNumber(costDetail.total_cost));
       },
       new BigNumber(0),
     );
-    console.log(supplies_cost.toFixed(2));
 
     project.total_cost = professional_cost.plus(supplies_cost).toFixed(2);
 
@@ -58,7 +59,7 @@ export class ProjectsService {
 
   public async findAll() {
     const query = this.baseQuery();
-    this.logger.debug(query.getQuery());
+    this.logQuery(query);
     const projects = await query.getMany();
     const new_cost = await this.calculate_total_cost(projects);
     return new_cost;
@@ -73,7 +74,7 @@ export class ProjectsService {
         })()
       : query.where('pr.id = :value::uuid', { value: clean_value });
 
-    process.env.NODE_ENV == 'dev' && this.logger.debug(query.getQuery());
+    this.logQuery(query);
     return (
       (await query.getOne()) ??
       (() => {

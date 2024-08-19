@@ -186,7 +186,7 @@ export class ProfessionalService {
 
   public async findAllProfessionalCost() {
     const query = this.costBaseQuery();
-    this.logger.debug(query.getQuery());
+    this.logQuery(query);
     return await query.getMany();
   }
 

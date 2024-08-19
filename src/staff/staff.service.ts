@@ -6,7 +6,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import constants from '../common/shared/constants';
-import { ILike, Repository } from 'typeorm';
+import { ILike, Repository, SelectQueryBuilder } from 'typeorm';
 import { Staff } from './entities/staff.entity';
 import { CreateStaffDto } from './dtos/create-staff.dto';
 import { UpdateStaffDto } from './dtos/update-staff.dto';
@@ -18,6 +18,10 @@ export class StaffService {
     @Inject(constants.staff)
     private staffRepo: Repository<Staff>,
   ) {}
+
+  private logQuery(query: SelectQueryBuilder<Staff>) {
+    return process.env.NODE_ENV == 'dev' && this.logger.debug(query.getQuery());
+  }
 
   private staffBaseQuery() {
     return this.staffRepo
@@ -41,7 +45,7 @@ export class StaffService {
 
   public async getAll() {
     const query = this.staffBaseQuery();
-    this.logger.debug(query.getQuery());
+    this.logQuery(query);
     return query.getMany();
   }
 
@@ -50,13 +54,13 @@ export class StaffService {
     const query = this.staffBaseQuery().where({
       name: ILike(`%${clean_name}%`),
     });
-    this.logger.debug(query.getQuery());
+    this.logQuery(query);
     return await query.getMany();
   }
 
   public async findOne(id: Pick<Staff, 'id'>) {
     const query = this.staffBaseQuery().where('s.id = :id', { id });
-    process.env.NODE_ENV == 'dev' && this.logger.debug(query.getQuery());
+    this.logQuery(query);
     return (
       (await query.getOne()) ??
       (() => {

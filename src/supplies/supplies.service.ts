@@ -55,7 +55,7 @@ export class SuppliesService {
 
   async findAll() {
     const query = this.baseQuery();
-    this.logger.debug(query.getQuery());
+    this.logQuery(query);
     return await query.getMany();
   }
 

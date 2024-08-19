@@ -3,7 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  Logger,
   Param,
   Patch,
   Post,
@@ -18,7 +17,6 @@ import { ParseNumberOrUuidPipe } from '../common/pipes/parse-int-if-number.pipe'
 
 @Controller('professional')
 export class ProfessionalController {
-  logger = new Logger(ProfessionalController.name);
   constructor(private professionalService: ProfessionalService) {}
 
   @Post()

@@ -11,7 +11,7 @@ export class SupplyCostDetails extends CostDetail {
   })
   items: Relation<SupplyItem[]>;
 
-  @ManyToOne(() => Category)
+  @ManyToOne(() => Category, { cascade: true })
   @JoinColumn()
   category: Relation<Category>;
 
