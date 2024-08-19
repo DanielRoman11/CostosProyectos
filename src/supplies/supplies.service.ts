@@ -16,6 +16,7 @@ import { CreateSupplyCostDetailDto } from './dto/create-supply-cost.dto';
 import { Project } from '../projects/entities/project.entity';
 import { ProjectsService } from 'src/projects/projects.service';
 import BigNumber from 'bignumber.js';
+import { CostDetail } from 'src/common/shared/entities/cost-detail.entity';
 
 @Injectable()
 export class SuppliesService {
@@ -117,7 +118,10 @@ export class SuppliesService {
   public async findAllSupplyCost() {
     const query = this.costBaseQuery();
     this.logger.debug(query.getQuery());
-    return await query.getMany();
+    const all = await query.getMany();
+    return all.map((cost_details) => {
+      return this.calculate_supply_cost(cost_details);
+    });
   }
 
   public async findByIds(ids: Pick<Supply, 'id'>[]) {
@@ -164,19 +168,9 @@ export class SuppliesService {
           );
         }
 
-        console.log(
-          'Precio de: ',
-          supply.name,
-          ' ',
-          unit_price.times(qty).toFixed(2),
-          '\n',
-        );
-
         return total.plus(unit_price.times(qty));
       }, new BigNumber(0))
       .toFixed(2);
-
-    console.log('Costo total', total_cost);
 
     return await this.supplyCostRepo.save({
       unit: input.unit,
@@ -187,14 +181,31 @@ export class SuppliesService {
     });
   }
 
+  private calculate_supply_cost(costDetail: SupplyCostDetails) {
+    costDetail.total_cost = costDetail.items
+      .reduce((total, item) => {
+        const qty = new BigNumber(item.quantity);
+        const unit_price = new BigNumber(item.supply.unit_price);
+        return total.plus(unit_price.times(qty));
+      }, new BigNumber(0))
+      .toFixed(2);
+
+    return costDetail;
+  }
+
   public async findCostById(id: Pick<SupplyCostDetails, 'id'>) {
     const query = this.costBaseQuery().where('sc.id = :id', { id });
     this.logQuery(query);
-    return (
+    const cost_details =
       (await query.getOne()) ??
       (() => {
         throw new NotFoundException('No se encontró el suministro buscado');
-      })()
-    );
+      })();
+
+    const new_cost_details = this.calculate_supply_cost(cost_details);
+
+    return new_cost_details.total_cost === cost_details.total_cost
+      ? cost_details
+      : await this.supplyCostRepo.save(new_cost_details);
   }
 }
