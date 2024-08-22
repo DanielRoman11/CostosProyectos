@@ -13,6 +13,8 @@ async function bootstrap() {
   );
   app.useGlobalPipes(new ValidationPipe());
 
-  await app.listen(3000, '0.0.0.0');
+	app.enableCors({origin: ['http://localhost:3000','http://127.0.0.1'] })
+
+  await app.listen(3001, '0.0.0.0');
 }
 bootstrap();

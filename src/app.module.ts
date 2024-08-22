@@ -5,6 +5,8 @@ import { ConfigModule } from '@nestjs/config';
 import { SuppliesModule } from './supplies/supplies.module';
 import { CategoriesModule } from './categories/categories.module';
 import { ProjectsModule } from './projects/projects.module';
+import { CommandRunnerModule } from 'nest-commander';
+import { SeedService } from './seed.service';
 
 @Module({
   imports: [
@@ -20,6 +22,8 @@ import { ProjectsModule } from './projects/projects.module';
     SuppliesModule,
     CategoriesModule,
     ProjectsModule,
+    CommandRunnerModule,
   ],
+  providers: [SeedService],
 })
 export class AppModule {}

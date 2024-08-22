@@ -32,6 +32,8 @@ export class ProjectsService {
   }
 
   public async create(input: CreateProjectDto) {
+    process.env.NODE_ENV == 'dev' &&
+      this.logger.debug('API CALL - project create');
     return await this.projectRepo.save({ ...input });
   }
 

@@ -8,6 +8,6 @@ import { CategoryProvider } from './categories.provider';
   imports: [DatabaseModule],
   controllers: [CategoriesController],
   providers: [...CategoryProvider, CategoriesService],
-  exports: [CategoriesService],
+  exports: [CategoriesService, ...CategoryProvider],
 })
 export class CategoriesModule {}

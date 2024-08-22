@@ -18,5 +18,11 @@ import { ProfessionalItemProvider } from './professional-item.provider';
     ProfessionalService,
   ],
   controllers: [ProfessionalController, ProfessionalCostDetailController],
+  exports: [
+    ProfessionalService,
+    ...ProfessionalProvider,
+    ...ProfessionalItemProvider,
+    ...ProfessionalCostDetailProvider,
+  ],
 })
 export class ProfessionalModule {}
