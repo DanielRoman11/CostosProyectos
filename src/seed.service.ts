@@ -146,7 +146,7 @@ export class SeedService extends CommandRunner {
       this.professionalRepo.create({
         name: 'Professional 1',
         unit_price: '17553.1914893617',
-        staff_id: {
+        staff: {
           id: (await this.staffRepo.findOne({ where: { name: 'soldador' } }))
             .id,
         },
@@ -154,14 +154,14 @@ export class SeedService extends CommandRunner {
       this.professionalRepo.create({
         name: 'Professional 2',
         unit_price: '14605.0531914894',
-        staff_id: {
+        staff: {
           id: (await this.staffRepo.findOne({ where: { name: 'armador' } })).id,
         },
       }),
       this.professionalRepo.create({
         name: 'Professional 3',
         unit_price: '10849.4680851064',
-        staff_id: {
+        staff: {
           id: (await this.staffRepo.findOne({ where: { name: 'ayudante' } }))
             .id,
         },
@@ -169,7 +169,7 @@ export class SeedService extends CommandRunner {
       this.professionalRepo.create({
         name: 'Professional 4',
         unit_price: '20864.3617021277',
-        staff_id: {
+        staff: {
           id: (await this.staffRepo.findOne({ where: { name: 'sst' } })).id,
         },
       }),

@@ -23,7 +23,7 @@ export class Professional {
 
   @ManyToOne(() => Staff, { nullable: false, cascade: true })
   @JoinColumn()
-  staff_id: Relation<Staff>;
+  staff: Relation<Staff>;
 
   @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;

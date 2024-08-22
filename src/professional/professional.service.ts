@@ -121,7 +121,7 @@ export class ProfessionalService {
       name: clean_name,
       staff_id: input.staff_id
         ? await this.staffService.findOne(input.staff_id)
-        : professional.staff_id,
+        : professional.staff,
     });
   }
 

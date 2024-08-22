@@ -25,6 +25,7 @@ export class ProjectsService {
       .leftJoinAndSelect('pr.professionalCostDetails', 'pc')
       .leftJoinAndSelect('pc.items', 'pi')
       .leftJoinAndSelect('pi.professional', 'p')
+      .leftJoinAndSelect('p.staff', 'st')
       .leftJoinAndSelect('pr.supplyCostDetails', 'sc')
       .leftJoinAndSelect('sc.category', 'category')
       .leftJoinAndSelect('sc.items', 'si')
@@ -37,26 +38,29 @@ export class ProjectsService {
     return await this.projectRepo.save({ ...input });
   }
 
-  private calculate_project_cost(project: Project) {
-    const professional_cost = project.professionalCostDetails.reduce(
-      (total, costDetail) => {
-        return total.plus(new BigNumber(costDetail.total_cost));
-      },
-      new BigNumber(0),
-    );
-    const supplies_cost = project.supplyCostDetails.reduce(
+  private calculate_project_cost(project: Project): Project {
+    const project_copy = structuredClone(project);
+
+    const professional_cost = project_copy.professionalCostDetails.reduce(
       (total, costDetail) => {
         return total.plus(new BigNumber(costDetail.total_cost));
       },
       new BigNumber(0),
     );
 
-    project.total_cost = professional_cost.plus(supplies_cost).toFixed(2);
+    const supplies_cost = project_copy.supplyCostDetails.reduce(
+      (total, costDetail) => {
+        return total.plus(new BigNumber(costDetail.total_cost));
+      },
+      new BigNumber(0),
+    );
 
-    return project;
+    project_copy.total_cost = professional_cost.plus(supplies_cost).toFixed(2);
+
+    return project_copy;
   }
 
-  private async calculate_total_cost(projects: Project[]) {
+  private async calculate_all_total_cost(projects: Project[]) {
     return projects.map((project) => this.calculate_project_cost(project));
   }
 
@@ -64,18 +68,22 @@ export class ProjectsService {
     const query = this.baseQuery();
     this.logQuery(query);
     const projects = await query.getMany();
-    const new_cost = await this.calculate_total_cost(projects);
-    return new_cost;
+    const calc_projects = await this.calculate_all_total_cost(projects);
+
+    return projects.every(
+      (project) =>
+        calc_projects.find((p) => p.id === project.id).total_cost ===
+        project.total_cost,
+    )
+      ? projects
+      : calc_projects;
   }
 
   public async findOne(value: Pick<Project, 'id'> | string) {
-    const query = this.baseQuery();
     const clean_value = value.toString().trim();
-    typeof value !== 'string'
-      ? (() => {
-          throw new NotFoundException('No se encontró el proyecto buscado');
-        })()
-      : query.where('pr.id = :value::uuid', { value: clean_value });
+    const query = this.baseQuery().where('pr.id = :value::uuid', {
+      value: clean_value,
+    });
 
     this.logQuery(query);
     return (

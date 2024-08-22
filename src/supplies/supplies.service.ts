@@ -16,7 +16,6 @@ import { CreateSupplyCostDetailDto } from './dto/create-supply-cost.dto';
 import { Project } from '../projects/entities/project.entity';
 import { ProjectsService } from 'src/projects/projects.service';
 import BigNumber from 'bignumber.js';
-import { CostDetail } from 'src/common/shared/entities/cost-detail.entity';
 
 @Injectable()
 export class SuppliesService {
@@ -181,8 +180,12 @@ export class SuppliesService {
     });
   }
 
-  private calculate_supply_cost(costDetail: SupplyCostDetails) {
-    costDetail.total_cost = costDetail.items
+  private calculate_supply_cost(
+    cost_detail: SupplyCostDetails,
+  ): SupplyCostDetails {
+    const cost_detail_copy = structuredClone(cost_detail);
+
+    cost_detail_copy.total_cost = cost_detail_copy.items
       .reduce((total, item) => {
         const qty = new BigNumber(item.quantity);
         const unit_price = new BigNumber(item.supply.unit_price);
@@ -190,7 +193,7 @@ export class SuppliesService {
       }, new BigNumber(0))
       .toFixed(2);
 
-    return costDetail;
+    return cost_detail_copy;
   }
 
   public async findCostById(id: Pick<SupplyCostDetails, 'id'>) {
@@ -203,9 +206,8 @@ export class SuppliesService {
       })();
 
     const new_cost_details = this.calculate_supply_cost(cost_details);
-
-    return new_cost_details.total_cost === cost_details.total_cost
-      ? cost_details
-      : await this.supplyCostRepo.save(new_cost_details);
+    return new_cost_details.total_cost !== cost_details.total_cost
+      ? await this.supplyCostRepo.save(new_cost_details)
+      : cost_details;
   }
 }
