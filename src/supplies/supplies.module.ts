@@ -12,6 +12,6 @@ import { ProjectsModule } from '../projects/projects.module';
   imports: [DatabaseModule, CategoriesModule, ProjectsModule],
   providers: [...SupplyProviders, ...SupplyCostProviders, SuppliesService],
   controllers: [SuppliesController, SuppliesCostDetailController],
-  exports: [...SupplyProviders, ...SupplyCostProviders],
+  exports: [...SupplyProviders, ...SupplyCostProviders, SuppliesService],
 })
 export class SuppliesModule {}

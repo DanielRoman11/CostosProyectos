@@ -5,6 +5,8 @@ import { Project } from './entities/project.entity';
 import constants from '../common/shared/constants';
 import { Repository, SelectQueryBuilder } from 'typeorm';
 import BigNumber from 'bignumber.js';
+import { ProfessionalCostDetails } from '../professional/entities/professional-cost-detail.entity';
+import { SupplyCostDetails } from '../supplies/entities/supply-cost-detail.entity';
 
 @Injectable()
 export class ProjectsService {
@@ -38,19 +40,54 @@ export class ProjectsService {
     return await this.projectRepo.save({ ...input });
   }
 
+  public calculate_professional_cost(
+    cost_details: ProfessionalCostDetails,
+  ): ProfessionalCostDetails {
+    const cost_details_copy = structuredClone(cost_details);
+
+    cost_details_copy.total_cost = cost_details_copy.items
+      .reduce((total, items) => {
+        const qty = new BigNumber(items.quantity);
+        const professionalCost = new BigNumber(items.professional.unit_price);
+
+        return total.plus(professionalCost.times(qty));
+      }, new BigNumber(0))
+      .toFixed(2);
+
+    return cost_details_copy;
+  }
+
+  public calculate_supply_cost(
+    cost_detail: SupplyCostDetails,
+  ): SupplyCostDetails {
+    const cost_detail_copy = structuredClone(cost_detail);
+
+    cost_detail_copy.total_cost = cost_detail_copy.items
+      .reduce((total, item) => {
+        const qty = new BigNumber(item.quantity);
+        const unit_price = new BigNumber(item.supply.unit_price);
+        return total.plus(unit_price.times(qty));
+      }, new BigNumber(0))
+      .toFixed(2);
+
+    return cost_detail_copy;
+  }
+
   private calculate_project_cost(project: Project): Project {
     const project_copy = structuredClone(project);
 
     const professional_cost = project_copy.professionalCostDetails.reduce(
-      (total, costDetail) => {
-        return total.plus(new BigNumber(costDetail.total_cost));
+      (total, cost_details) => {
+        const new_cost_details = this.calculate_professional_cost(cost_details);
+        return total.plus(new BigNumber(new_cost_details.total_cost));
       },
       new BigNumber(0),
     );
 
     const supplies_cost = project_copy.supplyCostDetails.reduce(
-      (total, costDetail) => {
-        return total.plus(new BigNumber(costDetail.total_cost));
+      (total, cost_detail) => {
+        const new_cost_details = this.calculate_supply_cost(cost_detail);
+        return total.plus(new BigNumber(new_cost_details.total_cost));
       },
       new BigNumber(0),
     );
@@ -76,7 +113,7 @@ export class ProjectsService {
         project.total_cost,
     )
       ? projects
-      : calc_projects;
+      : await this.projectRepo.save(calc_projects);
   }
 
   public async findOne(value: Pick<Project, 'id'> | string) {

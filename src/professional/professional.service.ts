@@ -184,23 +184,6 @@ export class ProfessionalService {
     });
   }
 
-  private calculate_professional_cost(
-    cost_details: ProfessionalCostDetails,
-  ): ProfessionalCostDetails {
-    const cost_details_copy = structuredClone(cost_details);
-
-    cost_details_copy.total_cost = cost_details_copy.items
-      .reduce((total, items) => {
-        const qty = new BigNumber(items.quantity);
-        const professionalCost = new BigNumber(items.professional.unit_price);
-
-        return total.plus(professionalCost.times(qty));
-      }, new BigNumber(0))
-      .toFixed(2);
-
-    return cost_details_copy;
-  }
-
   public async findAllProfessionalCost() {
     const query = this.costBaseQuery();
     this.logQuery(query);
@@ -218,7 +201,7 @@ export class ProfessionalService {
         );
       })();
 
-    const new_cost_details = this.calculate_professional_cost(cost_details);
+    const new_cost_details = this.projectService.calculate_professional_cost(cost_details);
     return new_cost_details.total_cost !== cost_details.total_cost
       ? await this.professionalCostRepo.save(new_cost_details)
       : cost_details;

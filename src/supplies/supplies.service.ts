@@ -119,7 +119,7 @@ export class SuppliesService {
     this.logQuery(query);
     const all = await query.getMany();
     return all.map((cost_details) => {
-      return this.calculate_supply_cost(cost_details);
+      return this.projectService.calculate_supply_cost(cost_details);
     });
   }
 
@@ -180,22 +180,6 @@ export class SuppliesService {
     });
   }
 
-  private calculate_supply_cost(
-    cost_detail: SupplyCostDetails,
-  ): SupplyCostDetails {
-    const cost_detail_copy = structuredClone(cost_detail);
-
-    cost_detail_copy.total_cost = cost_detail_copy.items
-      .reduce((total, item) => {
-        const qty = new BigNumber(item.quantity);
-        const unit_price = new BigNumber(item.supply.unit_price);
-        return total.plus(unit_price.times(qty));
-      }, new BigNumber(0))
-      .toFixed(2);
-
-    return cost_detail_copy;
-  }
-
   public async findCostById(id: Pick<SupplyCostDetails, 'id'>) {
     const query = this.costBaseQuery().where('sc.id = :id', { id });
     this.logQuery(query);
@@ -205,7 +189,8 @@ export class SuppliesService {
         throw new NotFoundException('No se encontró el suministro buscado');
       })();
 
-    const new_cost_details = this.calculate_supply_cost(cost_details);
+    const new_cost_details =
+      this.projectService.calculate_supply_cost(cost_details);
     return new_cost_details.total_cost !== cost_details.total_cost
       ? await this.supplyCostRepo.save(new_cost_details)
       : cost_details;
