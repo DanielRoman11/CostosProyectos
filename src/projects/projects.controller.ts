@@ -44,4 +44,9 @@ export class ProjectsController {
   remove(@Param('id', new ParseNumberOrUuidPipe()) id: Pick<Project, 'id'>) {
     return this.projectsService.remove(id);
   }
+
+	@Get('total-cost')
+  findProjectTotalCostByTime() {
+    return this.projectsService.findProjectTotalCostInTime();
+  }
 }

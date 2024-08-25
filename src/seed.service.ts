@@ -10,7 +10,6 @@ import { Supply } from './supplies/entities/supply.entity';
 import { ProfessionalCostDetails } from './professional/entities/professional-cost-detail.entity';
 import { SupplyCostDetails } from './supplies/entities/supply-cost-detail.entity';
 
-
 @Injectable()
 @Command({ name: 'db:seed', description: 'Seed test data into database' })
 export class SeedService extends CommandRunner {
@@ -57,6 +56,90 @@ export class SeedService extends CommandRunner {
       this.projectRepo.create({
         name: 'calculos costos soldadura',
         budget: '1500000.50',
+      }),
+      this.projectRepo.create({
+        name: 'Cálculos Bridas',
+        budget: '3200000.00',
+        total_cost: '3200000.00',
+        createdAt: '2023-09-15',
+      }),
+      this.projectRepo.create({
+        name: 'Estudio de Cargas',
+        budget: '1800000.00',
+        total_cost: '1800000.00',
+        createdAt: '2023-12-10',
+      }),
+      this.projectRepo.create({
+        name: 'Análisis de Estructuras',
+        budget: '2500000.00',
+        total_cost: '2500000.00',
+        createdAt: '2024-02-05',
+      }),
+      this.projectRepo.create({
+        name: 'Planificación de Proyecto',
+        budget: '4000000.00',
+        total_cost: '4000000.00',
+        createdAt: '2024-04-15',
+      }),
+      this.projectRepo.create({
+        name: 'Revisión de Seguridad',
+        budget: '2200000.00',
+        total_cost: '2200000.00',
+        createdAt: '2024-06-20',
+      }),
+      this.projectRepo.create({
+        name: 'Diseño de Componentes',
+        budget: '3000000.00',
+        total_cost: '3000000.00',
+        createdAt: '2024-07-10',
+      }),
+      this.projectRepo.create({
+        name: 'Optimización de Recursos',
+        budget: '1500000.00',
+        total_cost: '1500000.00',
+        createdAt: '2024-08-15',
+      }),
+      this.projectRepo.create({
+        name: 'Evaluación de Proveedores',
+        budget: '2800000.00',
+        total_cost: '2800000.00',
+        createdAt: '2023-11-22',
+      }),
+      this.projectRepo.create({
+        name: 'Desarrollo de Software',
+        budget: '5000000.00',
+        total_cost: '5000000.00',
+        createdAt: '2023-12-30',
+      }),
+      this.projectRepo.create({
+        name: 'Auditoría de Sistemas',
+        budget: '3400000.00',
+        total_cost: '3400000.00',
+        createdAt: '2024-01-18',
+      }),
+      this.projectRepo.create({
+        name: 'Implementación de Protocolos',
+        budget: '2700000.00',
+        total_cost: '2700000.00',
+        createdAt: '2024-03-03',
+      }),
+      this.projectRepo.create({
+        name: 'Estudio de Viabilidad',
+        budget: '4200000.00',
+        total_cost: '4200000.00',
+        createdAt: '2024-04-22',
+      }),
+      this.projectRepo.create({
+        name: 'Evaluación de Riesgos',
+        budget: '2600000.00',
+        total_cost: '2600000.00',
+        createdAt: '2024-05-30',
+      }),
+      this.projectRepo.create({
+        name: 'Capacitación Técnica',
+        budget: '3800000.00',
+        total_cost: '3800000.00',
+        createdAt: '2024-07-07',
       }),
     ];
 
@@ -403,7 +486,7 @@ export class SeedService extends CommandRunner {
       await Promise.all([this.suppliesCostRepo.save(supplies_cost)]);
 
       console.log('✅ ALL COSTS SEEDED CREATED');
-			process.exit(0)
+      process.exit(0);
     } catch (error) {
       throw new Error(error);
     }
