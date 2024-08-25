@@ -5,7 +5,7 @@ import {
   ValidateNested,
   IsString,
 } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { ItemQuantityDto } from './create-supply-item.dto';
 import { UniqueArray } from '../../common/validators/unique-array-decorator';
 import { Category } from '../../categories/entities/category.entity';
@@ -29,5 +29,6 @@ export class CreateSupplyCostDetailDto {
 
   @IsNotEmpty({ message: 'La unidad de medida no puede estar vacía' })
   @IsString({ message: 'La unidad debe ser una cadena de texto' })
+	@Transform(({ value }) => value?.trim().toLocaleLowerCase())
   unit: string;
 }

@@ -47,17 +47,12 @@ export class ProfessionalService {
   public async createProfessional(
     input: CreateProfessionalDto,
   ): Promise<Professional> {
-    const clean_name = input.name.trim().toLocaleLowerCase();
-    const staff = await this.staffService.findOne(input.staff_id);
-    if (await this.findByExactInput(clean_name))
+    if (await this.findByExactInput(input.name))
       throw new BadRequestException('Este nombre ya lo usa otro profesional');
+    const staff = await this.staffService.findOne(input.staff_id);
     if (!staff)
       throw new NotFoundException('No se encontró el tipo de personal');
-    return await this.professionalRepo.save({
-      ...input,
-      staff_id: staff,
-      name: clean_name,
-    });
+    return await this.professionalRepo.save({ ...input, staff_id: staff });
   }
 
   public async findAll() {
@@ -107,18 +102,13 @@ export class ProfessionalService {
     id: Pick<Professional, 'id'>,
   ): Promise<Professional> {
     const professional = await this.findOne(id);
-    const clean_name = input.name
-      ? input.name.trim().toLocaleLowerCase()
-      : professional.name;
-
-    const isNameInUse = await this.findByExactInput(clean_name);
+    const isNameInUse = input.name && (await this.findByExactInput(input.name));
     if (isNameInUse && isNameInUse.name !== professional.name)
       throw new BadRequestException('Este nombre ya lo usa otro profesional');
 
     return await this.professionalRepo.save({
       ...professional,
       ...input,
-      name: clean_name,
       staff_id: input.staff_id
         ? await this.staffService.findOne(input.staff_id)
         : professional.staff,
@@ -201,7 +191,8 @@ export class ProfessionalService {
         );
       })();
 
-    const new_cost_details = this.projectService.calculate_professional_cost(cost_details);
+    const new_cost_details =
+      this.projectService.calculate_professional_cost(cost_details);
     return new_cost_details.total_cost !== cost_details.total_cost
       ? await this.professionalCostRepo.save(new_cost_details)
       : cost_details;

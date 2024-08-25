@@ -40,16 +40,10 @@ export class SuppliesService {
   }
 
   public async create(input: CreateSupplyDto) {
-    const clean_name = input.name.trim().toLocaleLowerCase();
-
-    if (await this.findByExactInput(clean_name))
+    if (await this.findByExactInput(input.name))
       throw new BadRequestException('El nombre del suministro está en uso');
 
-    return await this.supplyRepo.save({
-      ...input,
-      name: clean_name,
-      description: input.description && input.description.trim(),
-    });
+    return await this.supplyRepo.save({ ...input });
   }
 
   async findAll() {
@@ -82,22 +76,14 @@ export class SuppliesService {
 
   async update(id: Pick<Supply, 'id'>, input: UpdateSupplyDto) {
     const supply = await this.findOne(id);
-    const clean_name = input.name
-      ? input.name.trim().toLocaleLowerCase()
-      : supply.name;
-    const clean_description = input.description
-      ? input.description.trim()
-      : supply.description;
 
-    const isNameInUse = await this.findByExactInput(clean_name);
+    const isNameInUse = input.name && (await this.findByExactInput(input.name));
     if (isNameInUse && isNameInUse.name !== supply.name)
       throw new BadRequestException('Este nombre ya lo usa otro profesional');
 
     return await this.supplyRepo.save({
       ...supply,
       ...input,
-      name: clean_name,
-      description: clean_description,
     });
   }
 

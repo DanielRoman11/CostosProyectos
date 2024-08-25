@@ -28,10 +28,9 @@ export class CategoriesService {
   }
 
   public async create(input: CreateCategoryDto) {
-    const clean_category = input.name.trim().toLocaleLowerCase();
-    if (await this.baseQuery().where({ name: clean_category }).getOne())
+    if (await this.baseQuery().where({ name: input.name }).getOne())
       throw new BadRequestException('Esta categoria ya existe');
-    return await this.categoryRepo.save({ ...input, name: clean_category });
+    return await this.categoryRepo.save({ ...input });
   }
 
   public async findAll() {

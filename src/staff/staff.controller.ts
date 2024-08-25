@@ -8,11 +8,11 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
-import { CreateStaffDto } from './dtos/create-staff.dto';
+import { CreateStaffDto } from './dto/create-staff.dto';
 import { StaffService } from './staff.service';
-import { SearchQuerysStaff } from './dtos/searchQueryStaff';
+import { SearchQuerysStaff } from './dto/searchQueryStaff';
 import { Staff } from './entities/staff.entity';
-import { UpdateStaffDto } from './dtos/update-staff.dto';
+import { UpdateStaffDto } from './dto/update-staff.dto';
 import { ParseNumberOrUuidPipe } from '../common/pipes/parse-int-if-number.pipe';
 
 @Controller('staff')

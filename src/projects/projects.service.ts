@@ -164,12 +164,11 @@ export class ProjectsService {
   }
 
   public async findOne(value: Pick<Project, 'id'> | string) {
-    const clean_value = value.toString().trim();
     const query = this.baseQuery().where('pr.id = :value::uuid', {
-      value: clean_value,
+      value: value,
     });
-
     this.logQuery(query);
+
     return (
       (await query.getOne()) ??
       (() => {

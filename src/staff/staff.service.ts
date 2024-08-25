@@ -8,8 +8,8 @@ import {
 import constants from '../common/shared/constants';
 import { ILike, Repository, SelectQueryBuilder } from 'typeorm';
 import { Staff } from './entities/staff.entity';
-import { CreateStaffDto } from './dtos/create-staff.dto';
-import { UpdateStaffDto } from './dtos/update-staff.dto';
+import { CreateStaffDto } from './dto/create-staff.dto';
+import { UpdateStaffDto } from './dto/update-staff.dto';
 
 @Injectable()
 export class StaffService {
@@ -30,17 +30,14 @@ export class StaffService {
   }
 
   public async create(input: CreateStaffDto) {
-    const clean_name = input.name.trim().toLocaleLowerCase();
     if (
       await this.staffBaseQuery()
-        .where('name = :name', { name: clean_name })
+        .where('name = :name', { name: input.name })
         .getExists()
     )
       throw new BadRequestException('Esta profesión ya existe.');
 
-    return await this.staffRepo.save({
-      name: clean_name,
-    });
+    return await this.staffRepo.save({ ...input });
   }
 
   public async getAll() {
@@ -49,10 +46,9 @@ export class StaffService {
     return query.getMany();
   }
 
-  public async findByInput(name: string) {
-    const clean_name = name.trim().toLocaleLowerCase();
+  public async findByInput(value: string) {
     const query = this.staffBaseQuery().where({
-      name: ILike(`%${clean_name}%`),
+      name: ILike(`%${value}%`),
     });
     this.logQuery(query);
     return await query.getMany();
