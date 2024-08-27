@@ -10,7 +10,6 @@ import { Supply } from './supplies/entities/supply.entity';
 import { ProfessionalCostDetails } from './professional/entities/professional-cost-detail.entity';
 import { SupplyCostDetails } from './supplies/entities/supply-cost-detail.entity';
 import { ProjectsService } from './projects/projects.service';
-import BigNumber from 'bignumber.js';
 
 @Injectable()
 @Command({ name: 'db:seed', description: 'Seed test data into database' })
@@ -225,11 +224,9 @@ export class SeedService extends CommandRunner {
     const professionals_instaces = await this.professionalRepo.find();
     try {
       const professionals_cost = this.professionalCostRepo.create({
-        project: {
-          id: project.id,
-        },
+        project: project,
         items: professionals_instaces.map((professional) => ({
-          professional: { id: professional.id },
+          professional: professional,
           quantity: '9',
         })),
         unit: 'hrs',
@@ -243,83 +240,51 @@ export class SeedService extends CommandRunner {
           },
           items: [
             {
-              supply: {
-                id: (
-                  await this.suppliesRepo.findOne({
-                    where: { name: ILike('%soldadura%') },
-                  })
-                ).id,
-              },
+              supply: await this.suppliesRepo.findOne({
+                where: { name: ILike('%soldadura%') },
+              }),
               quantity: '5',
             },
             {
-              supply: {
-                id: (
-                  await this.suppliesRepo.findOne({
-                    where: { name: ILike('%discos de pulir%') },
-                  })
-                ).id,
-              },
+              supply: await this.suppliesRepo.findOne({
+                where: { name: ILike('%discos de pulir%') },
+              }),
               quantity: '1',
             },
             {
-              supply: {
-                id: (
-                  await this.suppliesRepo.findOne({
-                    where: { name: ILike('%de grata%') },
-                  })
-                ).id,
-              },
+              supply: await this.suppliesRepo.findOne({
+                where: { name: ILike('%de grata%') },
+              }),
               quantity: '0.125',
             },
             {
-              supply: {
-                id: (
-                  await this.suppliesRepo.findOne({
-                    where: { name: ILike('%kit de tintas%') },
-                  })
-                ).id,
-              },
+              supply: await this.suppliesRepo.findOne({
+                where: { name: ILike('%kit de tintas%') },
+              }),
               quantity: '0.20',
             },
             {
-              supply: {
-                id: (
-                  await this.suppliesRepo.findOne({
-                    where: { name: ILike('%transparente%') },
-                  })
-                ).id,
-              },
+              supply: await this.suppliesRepo.findOne({
+                where: { name: ILike('%transparente%') },
+              }),
               quantity: '2',
             },
             {
-              supply: {
-                id: (
-                  await this.suppliesRepo.findOne({
-                    where: { name: ILike('%oscuro%') },
-                  })
-                ).id,
-              },
+              supply: await this.suppliesRepo.findOne({
+                where: { name: ILike('%oscuro%') },
+              }),
               quantity: '0.05',
             },
             {
-              supply: {
-                id: (
-                  await this.suppliesRepo.findOne({
-                    where: { name: ILike('%combustible motosoldador%') },
-                  })
-                ).id,
-              },
+              supply: await this.suppliesRepo.findOne({
+                where: { name: ILike('%combustible motosoldador%') },
+              }),
               quantity: '7',
             },
             {
-              supply: {
-                id: (
-                  await this.suppliesRepo.findOne({
-                    where: { name: ILike('%combustible generador%') },
-                  })
-                ).id,
-              },
+              supply: await this.suppliesRepo.findOne({
+                where: { name: ILike('%combustible generador%') },
+              }),
               quantity: '7',
             },
           ],
@@ -339,71 +304,45 @@ export class SeedService extends CommandRunner {
           },
           items: [
             {
-              supply: {
-                id: (
-                  await this.suppliesRepo.findOne({
-                    where: { name: 'generador' },
-                  })
-                ).id,
-              },
+              supply: await this.suppliesRepo.findOne({
+                where: { name: 'generador' },
+              }),
               quantity: '1',
             },
             {
-              supply: {
-                id: (
-                  await this.suppliesRepo.findOne({
-                    where: { name: 'motosoldador' },
-                  })
-                ).id,
-              },
+              supply: await this.suppliesRepo.findOne({
+                where: { name: 'motosoldador' },
+              }),
               quantity: '1',
             },
             {
-              supply: {
-                id: (
-                  await this.suppliesRepo.findOne({
-                    where: { name: 'pulidora' },
-                  })
-                ).id,
-              },
+              supply: await this.suppliesRepo.findOne({
+                where: { name: 'pulidora' },
+              }),
               quantity: '2',
             },
             {
-              supply: {
-                id: (
-                  await this.suppliesRepo.findOne({
-                    where: { name: 'extractor' },
-                  })
-                ).id,
-              },
+              supply: await this.suppliesRepo.findOne({
+                where: { name: 'extractor' },
+              }),
               quantity: '1',
             },
             {
-              supply: {
-                id: (
-                  await this.suppliesRepo.findOne({
-                    where: { name: 'extensiones' },
-                  })
-                ).id,
-              },
+              supply: await this.suppliesRepo.findOne({
+                where: { name: 'extensiones' },
+              }),
               quantity: '2',
             },
             {
-              supply: {
-                id: (
-                  await this.suppliesRepo.findOne({
-                    where: { name: 'reflector' },
-                  })
-                ).id,
-              },
+              supply: await this.suppliesRepo.findOne({
+                where: { name: 'reflector' },
+              }),
               quantity: '1',
             },
           ],
-          category: {
-            id: (
-              await this.categoryRepo.findOne({ where: { name: 'equipos' } })
-            ).id,
-          },
+          category: await this.categoryRepo.findOne({
+            where: { name: 'equipos' },
+          }),
           unit: 'und',
           total_cost: '0',
         }),
@@ -413,51 +352,49 @@ export class SeedService extends CommandRunner {
           },
           items: [
             {
-              supply: {
-                id: (
-                  await this.suppliesRepo.findOne({
-                    where: { name: ILike('%furgon%') },
-                  })
-                ).id,
-              },
+              supply: await this.suppliesRepo.findOne({
+                where: { name: ILike('%furgon%') },
+              }),
               quantity: '2',
             },
           ],
-          category: {
-            id: (
-              await this.categoryRepo.findOne({ where: { name: 'transporte' } })
-            ).id,
-          },
+          category: await this.categoryRepo.findOne({
+            where: { name: 'transporte' },
+          }),
           unit: 'und',
           total_cost: '0',
         }),
       ];
 
-			project.professionalCostDetails = [
+      project.professionalCostDetails = [
         await this.professionalCostRepo.save(professionals_cost),
       ];
       project.supplyCostDetails = await this.suppliesCostRepo.save(
         supplies_cost_instances,
       );
-
       console.log('✅ ALL COSTS INSTANCES CREATED');
 
-      console.log(project);
+      await Promise.all([
+        ...project.professionalCostDetails.map(async (cost_details, i) => {
+          const new_cost_details =
+            this.projectService.calculate_professional_cost(cost_details);
+          const saved_details =
+            await this.professionalCostRepo.save(new_cost_details);
+          project.professionalCostDetails[i] = saved_details;
+        }),
+        ...project.supplyCostDetails.map(async (cost_details, i) => {
+          const new_cost_details =
+            this.projectService.calculate_supply_cost(cost_details);
+          const saved_details =
+            await this.suppliesCostRepo.save(new_cost_details);
+          project.supplyCostDetails[i] = saved_details;
+        }),
+      ]);
 
-      project.professionalCostDetails.map(async (cost_details) => {
-        const new_cost_details =
-          this.projectService.calculate_professional_cost(cost_details);
-        await this.professionalCostRepo.save(new_cost_details);
-      });
-      project.supplyCostDetails.map(async (cost_details) => {
-        const new_cost_details =
-          this.projectService.calculate_supply_cost(cost_details);
-        await this.suppliesCostRepo.save(new_cost_details);
-      });
-
-      await this.projectRepo.save(
+      const saved_project = await this.projectRepo.save(
         this.projectService.calculate_project_cost(project),
       );
+      console.log('PROJECT TOTAL COST ', saved_project.total_cost);
       console.log('✅ ALL COSTS FOR PROJECT CREATED');
 
       process.exit(0);

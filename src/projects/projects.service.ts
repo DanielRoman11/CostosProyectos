@@ -55,11 +55,9 @@ export class ProjectsService {
       .reduce((total, items) => {
         const qty = new BigNumber(items.quantity);
         const professionalCost = new BigNumber(items.professional.unit_price);
-
         return total.plus(professionalCost.times(qty));
       }, new BigNumber(0))
       .toFixed(2);
-
     return cost_details_copy;
   }
 
