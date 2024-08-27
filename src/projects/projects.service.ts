@@ -79,21 +79,19 @@ export class ProjectsService {
     return cost_detail_copy;
   }
 
-  private calculate_project_cost(project: Project): Project {
+  public calculate_project_cost(project: Project): Project {
     const project_copy = structuredClone(project);
 
     const professional_cost = project_copy.professionalCostDetails.reduce(
       (total, cost_details) => {
-        const new_cost_details = this.calculate_professional_cost(cost_details);
-        return total.plus(new BigNumber(new_cost_details.total_cost));
+        return total.plus(new BigNumber(cost_details.total_cost));
       },
       new BigNumber(0),
     );
 
     const supplies_cost = project_copy.supplyCostDetails.reduce(
       (total, cost_detail) => {
-        const new_cost_details = this.calculate_supply_cost(cost_detail);
-        return total.plus(new BigNumber(new_cost_details.total_cost));
+        return total.plus(new BigNumber(cost_detail.total_cost));
       },
       new BigNumber(0),
     );

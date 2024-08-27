@@ -9,6 +9,8 @@ import { Professional } from './professional/entities/profesional.entity';
 import { Supply } from './supplies/entities/supply.entity';
 import { ProfessionalCostDetails } from './professional/entities/professional-cost-detail.entity';
 import { SupplyCostDetails } from './supplies/entities/supply-cost-detail.entity';
+import { ProjectsService } from './projects/projects.service';
+import BigNumber from 'bignumber.js';
 
 @Injectable()
 @Command({ name: 'db:seed', description: 'Seed test data into database' })
@@ -28,6 +30,8 @@ export class SeedService extends CommandRunner {
     private professionalCostRepo: Repository<ProfessionalCostDetails>,
     @Inject(constants.supplies_cost)
     private suppliesCostRepo: Repository<SupplyCostDetails>,
+
+    private projectService: ProjectsService,
   ) {
     super();
   }
@@ -54,92 +58,38 @@ export class SeedService extends CommandRunner {
 
     const projects = [
       this.projectRepo.create({
-        name: 'calculos costos soldadura',
+        name: 'bogota',
         budget: '1500000.50',
       }),
       this.projectRepo.create({
-        name: 'Cálculos Bridas',
+        name: 'tunja',
         budget: '3200000.00',
         total_cost: '3200000.00',
         createdAt: '2023-09-15',
       }),
       this.projectRepo.create({
-        name: 'Estudio de Cargas',
+        name: 'yopal',
         budget: '1800000.00',
         total_cost: '1800000.00',
         createdAt: '2023-12-10',
       }),
       this.projectRepo.create({
-        name: 'Análisis de Estructuras',
+        name: 'anapoima',
         budget: '2500000.00',
         total_cost: '2500000.00',
         createdAt: '2024-02-05',
       }),
       this.projectRepo.create({
-        name: 'Planificación de Proyecto',
+        name: 'madrid',
         budget: '4000000.00',
         total_cost: '4000000.00',
         createdAt: '2024-04-15',
       }),
       this.projectRepo.create({
-        name: 'Revisión de Seguridad',
+        name: 'chía',
         budget: '2200000.00',
         total_cost: '2200000.00',
         createdAt: '2024-06-20',
-      }),
-      this.projectRepo.create({
-        name: 'Diseño de Componentes',
-        budget: '3000000.00',
-        total_cost: '3000000.00',
-        createdAt: '2024-07-10',
-      }),
-      this.projectRepo.create({
-        name: 'Optimización de Recursos',
-        budget: '1500000.00',
-        total_cost: '1500000.00',
-        createdAt: '2024-08-15',
-      }),
-      this.projectRepo.create({
-        name: 'Evaluación de Proveedores',
-        budget: '2800000.00',
-        total_cost: '2800000.00',
-        createdAt: '2023-11-22',
-      }),
-      this.projectRepo.create({
-        name: 'Desarrollo de Software',
-        budget: '5000000.00',
-        total_cost: '5000000.00',
-        createdAt: '2023-12-30',
-      }),
-      this.projectRepo.create({
-        name: 'Auditoría de Sistemas',
-        budget: '3400000.00',
-        total_cost: '3400000.00',
-        createdAt: '2024-01-18',
-      }),
-      this.projectRepo.create({
-        name: 'Implementación de Protocolos',
-        budget: '2700000.00',
-        total_cost: '2700000.00',
-        createdAt: '2024-03-03',
-      }),
-      this.projectRepo.create({
-        name: 'Estudio de Viabilidad',
-        budget: '4200000.00',
-        total_cost: '4200000.00',
-        createdAt: '2024-04-22',
-      }),
-      this.projectRepo.create({
-        name: 'Evaluación de Riesgos',
-        budget: '2600000.00',
-        total_cost: '2600000.00',
-        createdAt: '2024-05-30',
-      }),
-      this.projectRepo.create({
-        name: 'Capacitación Técnica',
-        budget: '3800000.00',
-        total_cost: '3800000.00',
-        createdAt: '2024-07-07',
       }),
     ];
 
@@ -270,7 +220,7 @@ export class SeedService extends CommandRunner {
     );
 
     const project = await this.projectRepo.findOne({
-      where: { name: 'calculos costos soldadura' },
+      where: { name: 'bogota' },
     });
     const professionals_instaces = await this.professionalRepo.find();
     try {
@@ -285,9 +235,8 @@ export class SeedService extends CommandRunner {
         unit: 'hrs',
         total_cost: '0',
       });
-      await this.professionalCostRepo.save(professionals_cost);
 
-      const supplies_cost = [
+      const supplies_cost_instances = [
         this.suppliesCostRepo.create({
           project: {
             id: project.id,
@@ -483,9 +432,34 @@ export class SeedService extends CommandRunner {
           total_cost: '0',
         }),
       ];
-      await Promise.all([this.suppliesCostRepo.save(supplies_cost)]);
 
-      console.log('✅ ALL COSTS SEEDED CREATED');
+			project.professionalCostDetails = [
+        await this.professionalCostRepo.save(professionals_cost),
+      ];
+      project.supplyCostDetails = await this.suppliesCostRepo.save(
+        supplies_cost_instances,
+      );
+
+      console.log('✅ ALL COSTS INSTANCES CREATED');
+
+      console.log(project);
+
+      project.professionalCostDetails.map(async (cost_details) => {
+        const new_cost_details =
+          this.projectService.calculate_professional_cost(cost_details);
+        await this.professionalCostRepo.save(new_cost_details);
+      });
+      project.supplyCostDetails.map(async (cost_details) => {
+        const new_cost_details =
+          this.projectService.calculate_supply_cost(cost_details);
+        await this.suppliesCostRepo.save(new_cost_details);
+      });
+
+      await this.projectRepo.save(
+        this.projectService.calculate_project_cost(project),
+      );
+      console.log('✅ ALL COSTS FOR PROJECT CREATED');
+
       process.exit(0);
     } catch (error) {
       throw new Error(error);
