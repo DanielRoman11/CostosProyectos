@@ -105,36 +105,41 @@ $ pnpm run start
 $ pnpm run start:dev
 ```
 
-If you setup everything in your local enviroment you migth have setup a PostgresSQL database. If you have docker install you can just go and run
+If you setup everything in your local machine you might have setup a PostgresSQL database, but if you have docker install you can just go and run
 
 ```bash
 # database service from docker compose file
 $ docker compose up db
 ```
 
-## Test
+This will run a postgresSQL database service. If you are MAC OS you have to change the HOST on the _.env.dev_ file to this
 
 ```bash
-# unit tests
-$ pnpm run test
-
-# e2e tests
-$ pnpm run test:e2e
-
-# test coverage
-$ pnpm run test:cov
+DB_HOST=db
 ```
 
-## Support
+## Testing
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+### Running Tests
+
+_Note: The testing setup is still in progress. We are working on integrating test cases and E2E Testing._
+
+Currently, you can run preliminary tests using:
+
+```bash
+# npm
+npm run test
+
+# pnpm
+pnpm test
+
+# yarn
+test
+```
+
+
 
 ## Stay in touch
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
+- Author - [Daniel Román](https://www.linkedin.com/in/danielroman-/)
+- Website - [danielroman.pages.dev](https://danielroman.pages.dev/)
