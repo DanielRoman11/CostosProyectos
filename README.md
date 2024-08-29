@@ -127,17 +127,31 @@ _Note: The testing setup is still in progress. We are working on integrating tes
 Currently, you can run preliminary tests using:
 
 ```bash
-# npm
-npm run test
-
-# pnpm
 pnpm test
-
-# yarn
-test
 ```
 
+## Database Seeding
 
+To help you get started quickly and understand the structure of the project, you can use the following command:
+
+### Creating Example Data
+
+```bash
+pnpm db:seed
+```
+
+This will populate your database with sample data, including projects, categories, supplies, and professionals. It’s an easy way to explore the project's features without manually entering data.
+
+Get a Hands-On experience by using the populated data. Don't worry if it's needed you can always delete all data from database by using the following command:
+
+```bash
+pnpm db:flush
+```
+
+This will delete all the sample data created by the seeding process, allowing you to start fresh.
+
+> [!CAUTION]
+> This command will drop every single table in the database. If there is any important data it will be lost forever.
 
 ## Stay in touch
 
