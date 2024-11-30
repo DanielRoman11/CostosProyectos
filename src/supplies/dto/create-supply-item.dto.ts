@@ -10,6 +10,6 @@ export class ItemQuantityDto {
   @IsNotEmpty({ message: 'La cantidad no puede estar vacía' })
   @IsString({ message: 'El decimal debe ser una cadena de texto' })
   @IsDecimal({}, { message: 'La cantidad debe ser un entero o decimal' })
-	@Transform(({ value }) => value?.trim())
+  @Transform(({ value }) => value?.trim())
   quantity: string;
 }

@@ -40,7 +40,7 @@ export class ProfessionalService {
   private baseQuery() {
     return this.professionalRepo
       .createQueryBuilder('p')
-      .leftJoinAndSelect('p.staff_id', 'staff')
+      .leftJoinAndSelect('p.staff', 'staff')
       .orderBy('p.updatedAt', 'DESC');
   }
 
@@ -119,17 +119,9 @@ export class ProfessionalService {
     return await this.professionalRepo.delete(id);
   }
 
-  private costBaseQuery() {
-    return this.professionalCostRepo
-      .createQueryBuilder('pc')
-      .leftJoinAndSelect('pc.items', 'items')
-      .leftJoinAndSelect('items.professional', 'professional')
-      .orderBy('pc.updatedAt', 'DESC');
-  }
-
   public async createProfessionalCost(
     input: CreateProfessionalCostDetailDto,
-    project_id: Pick<Project, 'id'>,
+    project_id: string,
   ) {
     const professionals = await this.findByIds(
       input.items.map((item) => item.professional),
@@ -166,35 +158,13 @@ export class ProfessionalService {
       }, new BigNumber(0))
       .toFixed(2);
 
-    return await this.professionalCostRepo.save({
+    await this.professionalCostRepo.save({
       ...input,
       project,
       total_cost,
       professionals,
     });
-  }
 
-  public async findAllProfessionalCost() {
-    const query = this.costBaseQuery();
-    this.logQuery(query);
-    return await query.getMany();
-  }
-
-  public async findCostById(id: Pick<ProfessionalCostDetails, 'id'>) {
-    const query = this.costBaseQuery().where('pc.id = :id', { id });
-    this.logQuery(query);
-    const cost_details =
-      (await query.getOne()) ??
-      (() => {
-        throw new NotFoundException(
-          'No se encontraron los costos de los detalles de profesionales',
-        );
-      })();
-
-    const new_cost_details =
-      this.projectService.calculate_professional_cost(cost_details);
-    return new_cost_details.total_cost !== cost_details.total_cost
-      ? await this.professionalCostRepo.save(new_cost_details)
-      : cost_details;
+    await this.projectService.calculate_project_cost(project.id);
   }
 }

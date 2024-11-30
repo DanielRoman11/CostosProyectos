@@ -46,61 +46,31 @@ export class ProjectsService {
     return await this.projectRepo.save({ ...input });
   }
 
-  public calculate_professional_cost(
-    cost_details: ProfessionalCostDetails,
-  ): ProfessionalCostDetails {
-    const cost_details_copy = structuredClone(cost_details);
+  public async calculate_project_cost(
+    project_id: string | Project,
+  ): Promise<void> {
+    const project: Project =
+      typeof project_id !== 'string'
+        ? structuredClone(project_id)
+        : await this.findOne(project_id);
 
-    cost_details_copy.total_cost = cost_details_copy.items
-      .reduce((total, items) => {
-        const qty = new BigNumber(items.quantity);
-        const professionalCost = new BigNumber(items.professional.unit_price);
-        return total.plus(professionalCost.times(qty));
-      }, new BigNumber(0))
-      .toFixed(2);
-    return cost_details_copy;
-  }
-
-  public calculate_supply_cost(
-    cost_detail: SupplyCostDetails,
-  ): SupplyCostDetails {
-    const cost_detail_copy = structuredClone(cost_detail);
-
-    cost_detail_copy.total_cost = cost_detail_copy.items
-      .reduce((total, item) => {
-        const qty = new BigNumber(item.quantity);
-        const unit_price = new BigNumber(item.supply.unit_price);
-        return total.plus(unit_price.times(qty));
-      }, new BigNumber(0))
-      .toFixed(2);
-
-    return cost_detail_copy;
-  }
-
-  public calculate_project_cost(project: Project): Project {
-    const project_copy = structuredClone(project);
-
-    const professional_cost = project_copy.professionalCostDetails.reduce(
+    const professional_cost = project.professionalCostDetails.reduce(
       (total, cost_details) => {
         return total.plus(new BigNumber(cost_details.total_cost));
       },
       new BigNumber(0),
     );
 
-    const supplies_cost = project_copy.supplyCostDetails.reduce(
+    const supplies_cost = project.supplyCostDetails.reduce(
       (total, cost_detail) => {
         return total.plus(new BigNumber(cost_detail.total_cost));
       },
       new BigNumber(0),
     );
 
-    project_copy.total_cost = professional_cost.plus(supplies_cost).toFixed(2);
+    project.total_cost = professional_cost.plus(supplies_cost).toFixed(2);
 
-    return project_copy;
-  }
-
-  private async calculate_all_total_cost(projects: Project[]) {
-    return projects.map((project) => this.calculate_project_cost(project));
+    await this.projectRepo.save(project);
   }
 
   private calculate_total_cost(projects: Project[]) {
@@ -159,26 +129,26 @@ export class ProjectsService {
     //   : await this.projectRepo.save(calc_projects);
   }
 
-  public async findOne(value: Pick<Project, 'id'> | string) {
+  public async findOne(id: string | string) {
     const query = this.baseQuery().where('pr.id = :value::uuid', {
-      value: value,
+      value: id,
     });
-    this.logQuery(query);
+    this.logQuery(query.select());
 
     return (
-      (await query.getOne()) ??
+      (await query.select().getOne()) ??
       (() => {
         throw new NotFoundException('No se encontró el proyecto buscado');
       })()
     );
   }
 
-  public async update(id: Pick<Project, 'id'>, input: UpdateProjectDto) {
+  public async update(id: string, input: UpdateProjectDto) {
     const project = await this.findOne(id);
-    return await this.projectRepo.save({ ...project, ...input });
+    await this.projectRepo.save({ ...project, ...input });
   }
 
-  public async remove(id: Pick<Project, 'id'>) {
+  public async remove(id: string) {
     return await this.projectRepo.softDelete(id);
   }
 }

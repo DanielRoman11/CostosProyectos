@@ -12,10 +12,7 @@ import { SeedService } from './seed.service';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath:
-        process.env.NODE_ENV === 'dev'
-          ? `.env.${process.env.NODE_ENV}`
-          : '.env',
+      envFilePath: '.env'
     }),
     ProfessionalModule,
     StaffModule,

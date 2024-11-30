@@ -28,24 +28,24 @@ export class ProjectsController {
   }
 
   @Get(':id')
-  findOne(@Param('id', new ParseNumberOrUuidPipe()) id: Pick<Project, 'id'>) {
+  findOne(@Param('id', new ParseNumberOrUuidPipe()) id: string) {
     return this.projectsService.findOne(id);
   }
 
   @Patch(':id')
   update(
-    @Param('id', new ParseNumberOrUuidPipe()) id: Pick<Project, 'id'>,
+    @Param('id', new ParseNumberOrUuidPipe()) id: string,
     @Body() updateProjectDto: UpdateProjectDto,
   ) {
     return this.projectsService.update(id, updateProjectDto);
   }
 
   @Delete(':id')
-  remove(@Param('id', new ParseNumberOrUuidPipe()) id: Pick<Project, 'id'>) {
+  remove(@Param('id', new ParseNumberOrUuidPipe()) id: string) {
     return this.projectsService.remove(id);
   }
 
-	@Get('total-cost')
+  @Get('total-cost')
   findProjectTotalCostByTime() {
     return this.projectsService.findProjectTotalCostInTime();
   }

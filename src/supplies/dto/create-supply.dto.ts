@@ -21,7 +21,7 @@ export class CreateSupplyDto {
     message: 'Descripción de 5 a 250 caracteres',
   })
   @Transform(({ value }) => value?.trim())
-  description: string;
+  description?: string;
 
   @IsNotEmpty({ message: 'El precio unitario no puede estar vacío' })
   @IsString({ message: 'El decimal debe ser una cadena de texto' })

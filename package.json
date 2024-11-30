@@ -18,8 +18,8 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "db:seed": "cross-env NODE_ENV=dev node --env-file=.env.dev -r @swc-node/register src/cli.ts db:seed",
-    "db:flush": "node --env-file=.env.dev -r @swc-node/register scripts/run-sql.ts --rm"
+    "db:seed": "cross-env NODE_ENV=dev node --env-file=.env.cli -r @swc-node/register src/cli.ts db:seed",
+    "db:flush": "cross-env node --env-file=.env.cli -r @swc-node/register scripts/run-sql.ts --rm"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",

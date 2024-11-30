@@ -3,14 +3,14 @@ version: '3.8'
 services:
   api:
     image: nestjs-docker
-    container_name: api
+    container_name: api-project
     build:
       context: .
       dockerfile: Dockerfile
     ports:
       - '3001:3001'
     env_file:
-      - .env.dev
+      - .env
     volumes:
       - .:/app
     depends_on:
@@ -18,8 +18,8 @@ services:
 
   db:
     image: postgres
-    container_name: db
+    container_name: dbProject
     ports:
       - '5432:5432'
     env_file:
-      - .env.dev
+      - .env

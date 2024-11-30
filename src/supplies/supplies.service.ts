@@ -13,7 +13,6 @@ import { Supply } from './entities/supply.entity';
 import { CategoriesService } from '../categories/categories.service';
 import { SupplyCostDetails } from './entities/supply-cost-detail.entity';
 import { CreateSupplyCostDetailDto } from './dto/create-supply-cost.dto';
-import { Project } from '../projects/entities/project.entity';
 import { ProjectsService } from 'src/projects/projects.service';
 import BigNumber from 'bignumber.js';
 
@@ -67,7 +66,7 @@ export class SuppliesService {
   }
 
   private async findByExactInput(search_value: string) {
-    const query = this.baseQuery().where('sp.name = :name', {
+    const query = this.baseQuery().where(`sp.name = :name`, {
       name: search_value,
     });
     this.logQuery(query);
@@ -103,10 +102,7 @@ export class SuppliesService {
   public async findAllSupplyCost() {
     const query = this.costBaseQuery();
     this.logQuery(query);
-    const all = await query.getMany();
-    return all.map((cost_details) => {
-      return this.projectService.calculate_supply_cost(cost_details);
-    });
+    return await query.getMany();
   }
 
   public async findByIds(ids: Pick<Supply, 'id'>[]) {
@@ -117,7 +113,7 @@ export class SuppliesService {
 
   public async createSupplyCost(
     input: CreateSupplyCostDetailDto,
-    project_id: Pick<Project, 'id'>,
+    project_id: string,
   ) {
     const supplies = await this.findByIds(
       input.items.map((item) => item.supply),
@@ -157,28 +153,14 @@ export class SuppliesService {
       }, new BigNumber(0))
       .toFixed(2);
 
-    return await this.supplyCostRepo.save({
+    await this.supplyCostRepo.save({
       unit: input.unit,
       total_cost,
       items: input.items,
       category,
       project,
     });
-  }
 
-  public async findCostById(id: Pick<SupplyCostDetails, 'id'>) {
-    const query = this.costBaseQuery().where('sc.id = :id', { id });
-    this.logQuery(query);
-    const cost_details =
-      (await query.getOne()) ??
-      (() => {
-        throw new NotFoundException('No se encontró el suministro buscado');
-      })();
-
-    const new_cost_details =
-      this.projectService.calculate_supply_cost(cost_details);
-    return new_cost_details.total_cost !== cost_details.total_cost
-      ? await this.supplyCostRepo.save(new_cost_details)
-      : cost_details;
+    await this.projectService.calculate_project_cost(project);
   }
 }

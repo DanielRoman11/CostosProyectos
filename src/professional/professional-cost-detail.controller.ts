@@ -3,7 +3,6 @@ import { ProfessionalService } from './professional.service';
 import { CreateProfessionalCostDetailDto } from './dto/create-professional-cost.dto';
 import { ParseNumberOrUuidPipe } from '../common/pipes/parse-int-if-number.pipe';
 import { ProfessionalCostDetails } from './entities/professional-cost-detail.entity';
-import { Project } from '../projects/entities/project.entity';
 
 @Controller('/cost/professionals')
 export class ProfessionalCostDetailController {
@@ -12,7 +11,7 @@ export class ProfessionalCostDetailController {
   @Post(':project_id')
   create(
     @Param('project_id', new ParseNumberOrUuidPipe())
-    project_id: Pick<Project, 'id'>,
+    project_id: string,
     @Body() input: CreateProfessionalCostDetailDto,
   ) {
     return this.professionalService.createProfessionalCost(input, project_id);
@@ -20,7 +19,7 @@ export class ProfessionalCostDetailController {
 
   @Get()
   findAll() {
-    return this.professionalService.findAllProfessionalCost();
+    return this.professionalService.findAll();
   }
 
   @Get(':id')
@@ -28,6 +27,6 @@ export class ProfessionalCostDetailController {
     @Param('id', new ParseNumberOrUuidPipe())
     id: Pick<ProfessionalCostDetails, 'id'>,
   ) {
-    return this.professionalService.findCostById(id);
+    return this.professionalService.findOne(id);
   }
 }
