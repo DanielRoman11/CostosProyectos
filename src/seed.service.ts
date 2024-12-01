@@ -120,10 +120,6 @@ export class SeedService extends CommandRunner {
         unit_price: '7400',
       },
       {
-        name: 'DISCOS DE PULIR 7"X1/8"',
-        unit_price: '7400',
-      },
-      {
         name: '"DISCO DE GRATA (8 JUNTAS)"',
         unit_price: '29000',
       },
@@ -182,54 +178,49 @@ export class SeedService extends CommandRunner {
       {
         name: 'Professional 1',
         unit_price: '17553.1914893617',
-        staff_id: {
-          id: (await this.staffRepo.findOne({ where: { name: 'soldador' } }))
-            .id,
-        },
+        staff_id: (
+          await this.staffRepo.findOne({ where: { name: 'soldador' } })
+        ).id,
       },
       {
         name: 'Professional 2',
         unit_price: '14605.0531914894',
-        staff_id: {
-          id: (await this.staffRepo.findOne({ where: { name: 'armador' } })).id,
-        },
+        staff_id: (await this.staffRepo.findOne({ where: { name: 'armador' } }))
+          .id,
       },
       {
         name: 'Professional 3',
         unit_price: '10849.4680851064',
-        staff_id: {
-          id: (await this.staffRepo.findOne({ where: { name: 'ayudante' } }))
-            .id,
-        },
+        staff_id: (
+          await this.staffRepo.findOne({ where: { name: 'ayudante' } })
+        ).id,
       },
       {
         name: 'Professional 4',
         unit_price: '20864.3617021277',
-        staff_id: {
-          id: (await this.staffRepo.findOne({ where: { name: 'sst' } })).id,
-        },
+        staff_id: (await this.staffRepo.findOne({ where: { name: 'sst' } })).id,
       },
     ];
 
     await Promise.all([
       (async () => {
         for await (let project of projects) {
-          this.projectService.create(project);
+          await this.projectService.create(project);
         }
       })(),
       (async () => {
         for await (let category of categories) {
-          this.categoryService.create(category);
+          await this.categoryService.create(category);
         }
       })(),
       (async () => {
         for await (let supply of supplies) {
-          this.suppliesService.create(supply);
+          await this.suppliesService.create(supply);
         }
       })(),
       (async () => {
         for await (let professional of professionals) {
-          this.suppliesService.create(professional);
+          await this.professionalService.create(professional);
         }
       })(),
     ]);
@@ -242,36 +233,20 @@ export class SeedService extends CommandRunner {
       where: { name: 'bogota' },
       relations: ['professionalCostDetails', 'supplyCostDetails'],
     });
+
     const professionals_instaces = await this.professionalService.findAll();
 
-    // const professionals_cost = this.professionalCostRepo.create({
-    //   project: project,
-    //   items: professionals_instaces.map((professional) => ({
-    //     professional: professional,
-    //     quantity: '9',
-    //   })),
-    //   unit: 'hrs',
-    // });
-
-    console.log(professionals_instaces);
-
-    //TODO: ARREGLAR BUG DE CREACIÓN DE ITEMS
-    const items: ItemQuantityDto[] = professionals_instaces.map((pro) => {
-      console.log(pro);
-      return {
-        professional: pro,
-        quantity: '9',
-      };
-    });
-    console.log('Conversión: ', items);
-
-    const professionals_cost = this.professionalService.createProfessionalCost(
+    await this.professionalService.createProfessionalCost(
       {
         unit: 'h',
-        items,
+        items: professionals_instaces.map((pro) => ({
+          professional: pro,
+          quantity: '9',
+        })),
       },
       project.id,
     );
+
     const supplies_cost_instances = [
       this.suppliesCostRepo.create({
         project: {
@@ -406,10 +381,8 @@ export class SeedService extends CommandRunner {
     ];
 
     await Promise.all([
-      await this.professionalCostRepo.save(professionals_cost),
       await this.suppliesCostRepo.save(supplies_cost_instances),
     ]);
-    console.log('calculo');
     project = await this.projectRepo.findOne({
       where: { name: 'bogota' },
       relations: ['professionalCostDetails', 'supplyCostDetails'],
