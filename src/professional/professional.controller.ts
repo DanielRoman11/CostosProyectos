@@ -21,7 +21,7 @@ export class ProfessionalController {
 
   @Post()
   create(@Body() input: CreateProfessionalDto) {
-    return this.professionalService.createProfessional(input);
+    return this.professionalService.create(input);
   }
 
   @Get()

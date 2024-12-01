@@ -18,5 +18,5 @@ export class CreateProfessionalDto {
 
   @IsNotEmpty({ message: 'Debes escoger un rol para este professional' })
   @Type(() => Staff)
-  staff_id: Pick<Staff, 'id'>;
+  staff_id: number;
 }

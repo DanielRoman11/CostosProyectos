@@ -24,11 +24,10 @@ export class CreateSupplyCostDetailDto {
   items: ItemQuantityDto[];
 
   @IsNotEmpty({ message: 'La categoria no puede estar vacia' })
-  @Type(() => Category)
-  category_id: Pick<Category, 'id'>;
+  category_id: number;
 
   @IsNotEmpty({ message: 'La unidad de medida no puede estar vacía' })
   @IsString({ message: 'La unidad debe ser una cadena de texto' })
-	@Transform(({ value }) => value?.trim().toLocaleLowerCase())
+  @Transform(({ value }) => value?.trim().toLocaleLowerCase())
   unit: string;
 }

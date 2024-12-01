@@ -44,15 +44,14 @@ export class ProfessionalService {
       .orderBy('p.updatedAt', 'DESC');
   }
 
-  public async createProfessional(
-    input: CreateProfessionalDto,
-  ): Promise<Professional> {
+  public async create(input: CreateProfessionalDto): Promise<Professional> {
     if (await this.findByExactInput(input.name))
       throw new BadRequestException('Este nombre ya lo usa otro profesional');
     const staff = await this.staffService.findOne(input.staff_id);
     if (!staff)
       throw new NotFoundException('No se encontró el tipo de personal');
-    return await this.professionalRepo.save({ ...input, staff_id: staff });
+    const professional = this.professionalRepo.create({ ...input, staff });
+    return await this.professionalRepo.save(professional);
   }
 
   public async findAll() {
@@ -129,7 +128,7 @@ export class ProfessionalService {
 
     const foundProfessionalIds = new Set(professionals.map((prof) => prof.id));
     const missingProfessionals = input.items
-      .filter((item: any) => !foundProfessionalIds.has(item.professional))
+      .filter((item) => !foundProfessionalIds.has(item.professional.id))
       .map((item) => item.professional);
 
     if (missingProfessionals.length > 0) {
@@ -144,7 +143,7 @@ export class ProfessionalService {
         const unit_price = new BigNumber(prof.unit_price);
         const qty = new BigNumber(
           input.items.find(
-            (item: any) => item.professional === prof.id,
+            (item) => item.professional.id === prof.id,
           )?.quantity,
         );
 

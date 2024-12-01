@@ -54,7 +54,7 @@ export class StaffService {
     return await query.getMany();
   }
 
-  public async findOne(id: Pick<Staff, 'id'>) {
+  public async findOne(id: number) {
     const query = this.staffBaseQuery().where('s.id = :id', { id });
     this.logQuery(query);
     return (
@@ -65,7 +65,7 @@ export class StaffService {
     );
   }
 
-  public async update(input: UpdateStaffDto, id: Pick<Staff, 'id'>) {
+  public async update(input: UpdateStaffDto, id: number) {
     const staff = await this.findOne(id);
     return await this.staffRepo.save({
       ...staff,
@@ -74,7 +74,7 @@ export class StaffService {
     });
   }
 
-  public async delete(id: Pick<Staff, 'id'>) {
+  public async delete(id: number) {
     const staff = await this.findOne(id);
     return await this.staffRepo.delete(staff);
   }
