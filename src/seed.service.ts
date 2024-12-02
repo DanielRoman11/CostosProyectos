@@ -20,6 +20,8 @@ import { CreateCategoryDto } from './categories/dto/create-category.dto';
 import { CreateSupplyDto } from './supplies/dto/create-supply.dto';
 import { CreateProfessionalDto } from './professional/dto/create-professional.dto';
 import { ItemQuantityDto } from './professional/dto/create-professional-item.dto';
+import { ItemQuantityDto as CreateSupplyItemDto } from './supplies/dto/create-supply-item.dto';
+import { CreateSupplyCostDetailDto } from './supplies/dto/create-supply-cost.dto';
 
 @Injectable()
 @Command({ name: 'db:seed', description: 'Seed test data into database' })
@@ -246,12 +248,10 @@ export class SeedService extends CommandRunner {
       },
       project.id,
     );
+    console.log('ANTES DE LOS SUPPLIES');
 
-    const supplies_cost_instances = [
-      this.suppliesCostRepo.create({
-        project: {
-          id: project.id,
-        },
+    const supplies_cost_instances: CreateSupplyCostDetailDto[] = [
+      {
         items: [
           {
             supply: await this.suppliesRepo.findOne({
@@ -302,20 +302,14 @@ export class SeedService extends CommandRunner {
             quantity: '7',
           },
         ],
-        category: {
-          id: (
-            await this.categoryRepo.findOne({
-              where: { name: 'consumibles' },
-            })
-          ).id,
-        },
+        category_id: (
+          await this.categoryRepo.findOne({
+            where: { name: 'consumibles' },
+          })
+        ).id,
         unit: 'und',
-        total_cost: '0',
-      }),
-      this.suppliesCostRepo.create({
-        project: {
-          id: project.id,
-        },
+      },
+      {
         items: [
           {
             supply: await this.suppliesRepo.findOne({
@@ -354,16 +348,14 @@ export class SeedService extends CommandRunner {
             quantity: '1',
           },
         ],
-        category: await this.categoryRepo.findOne({
-          where: { name: 'equipos' },
-        }),
+        category_id: (
+          await this.categoryRepo.findOne({
+            where: { name: 'equipos' },
+          })
+        ).id,
         unit: 'und',
-        total_cost: '0',
-      }),
-      this.suppliesCostRepo.create({
-        project: {
-          id: project.id,
-        },
+      },
+      {
         items: [
           {
             supply: await this.suppliesRepo.findOne({
@@ -372,28 +364,28 @@ export class SeedService extends CommandRunner {
             quantity: '2',
           },
         ],
-        category: await this.categoryRepo.findOne({
-          where: { name: 'transporte' },
-        }),
+        category_id: (
+          await this.categoryRepo.findOne({
+            where: { name: 'transporte' },
+          })
+        ).id,
         unit: 'und',
-        total_cost: '0',
-      }),
+      },
     ];
 
-    await Promise.all([
-      await this.suppliesCostRepo.save(supplies_cost_instances),
-    ]);
-    project = await this.projectRepo.findOne({
-      where: { name: 'bogota' },
-      relations: ['professionalCostDetails', 'supplyCostDetails'],
-    });
-    await this.projectService.calculate_project_cost(project);
+    for await (let supplie_instance of supplies_cost_instances) {
+      await this.suppliesService.createSupplyCost(supplie_instance, project.id);
+    }
+    console.log('DESPUÉS DE LOS SUPPLIES');
+
+    // await this.projectService.calculate_project_cost(project);
     console.log('✅ ALL COSTS INSTANCES CREATED');
-    project = await this.projectRepo.findOne({
-      where: { name: 'bogota' },
-      relations: ['professionalCostDetails', 'supplyCostDetails'],
-    });
-    console.log(project);
+    console.log(
+      await this.projectRepo.findOne({
+        where: { name: 'bogota' },
+        relations: ['professionalCostDetails', 'supplyCostDetails'],
+      }),
+    );
     console.log('✅ ALL COSTS FOR PROJECT CREATED');
 
     process.exit(0);

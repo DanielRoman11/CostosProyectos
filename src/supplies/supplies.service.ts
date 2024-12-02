@@ -121,7 +121,7 @@ export class SuppliesService {
 
     const foundSuppliesIds = new Set(supplies.map((supply) => supply.id));
     const missingsupplies = input.items
-      .filter((item: any) => !foundSuppliesIds.has(item.supply))
+      .filter((item) => !foundSuppliesIds.has(item.supply.id))
       .map((item) => item.supply);
 
     missingsupplies.length > 0 &&
@@ -140,7 +140,7 @@ export class SuppliesService {
       .reduce((total, supply) => {
         const unit_price = new BigNumber(supply.unit_price);
         const qty = new BigNumber(
-          input.items.find((item: any) => item.supply === supply.id)?.quantity,
+          input.items.find((item) => item.supply.id === supply.id)?.quantity,
         );
 
         if (!qty) {
@@ -153,7 +153,7 @@ export class SuppliesService {
       }, new BigNumber(0))
       .toFixed(2);
 
-    await this.supplyCostRepo.save({
+    const supply_cost = await this.supplyCostRepo.save({
       unit: input.unit,
       total_cost,
       items: input.items,
@@ -161,6 +161,15 @@ export class SuppliesService {
       project,
     });
 
-    await this.projectService.calculate_project_cost(project);
+    console.log(supply_cost);
+
+    await this.projectService
+      .calculate_project_cost(project.id)
+      .then(() => {
+        console.log('Exito');
+      })
+      .catch((err) => {
+        console.log('Falló!', err);
+      });
   }
 }

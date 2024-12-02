@@ -28,20 +28,20 @@ export class CategoriesController {
   }
 
   @Get(':id')
-  findOne(@Param('id', new ParseNumberOrUuidPipe()) id: Pick<Category, 'id'>) {
+  findOne(@Param('id', new ParseNumberOrUuidPipe()) id: number) {
     return this.categoriesService.findOne(id);
   }
 
   @Patch(':id')
   update(
-    @Param('id', new ParseNumberOrUuidPipe()) id: Pick<Category, 'id'>,
+    @Param('id', new ParseNumberOrUuidPipe()) id: number,
     @Body() updateCategoryDto: UpdateCategoryDto,
   ) {
     return this.categoriesService.update(id, updateCategoryDto);
   }
 
   @Delete(':id')
-  remove(@Param('id', new ParseNumberOrUuidPipe()) id: Pick<Category, 'id'>) {
+  remove(@Param('id', new ParseNumberOrUuidPipe()) id: number) {
     return this.categoriesService.remove(id);
   }
 }

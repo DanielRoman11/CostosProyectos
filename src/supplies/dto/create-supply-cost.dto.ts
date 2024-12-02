@@ -8,7 +8,6 @@ import {
 import { Transform, Type } from 'class-transformer';
 import { ItemQuantityDto } from './create-supply-item.dto';
 import { UniqueArray } from '../../common/validators/unique-array-decorator';
-import { Category } from '../../categories/entities/category.entity';
 
 export class CreateSupplyCostDetailDto {
   @IsNotEmpty({

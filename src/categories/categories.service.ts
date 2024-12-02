@@ -39,7 +39,7 @@ export class CategoriesService {
     return await query.getMany();
   }
 
-  public async findOne(id: Pick<Category, 'id'>) {
+  public async findOne(id: number) {
     const query = this.baseQuery().where('c.id = :id', { id });
     this.logQuery(query);
     return (
@@ -50,10 +50,7 @@ export class CategoriesService {
     );
   }
 
-  public async update(
-    id: Pick<Category, 'id'>,
-    updateCategoryDto: UpdateCategoryDto,
-  ) {
+  public async update(id: number, updateCategoryDto: UpdateCategoryDto) {
     const category = await this.findOne(id);
     return await this.categoryRepo.save({
       ...category,
@@ -61,7 +58,7 @@ export class CategoriesService {
     });
   }
 
-  public async remove(id: Pick<Category, 'id'>) {
+  public async remove(id: number) {
     return await this.categoryRepo.delete(id);
   }
 }
