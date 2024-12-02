@@ -14,7 +14,6 @@ import { UpdateProfessionalDto } from './dto/update-professional.dto';
 import { ProfessionalCostDetails } from './entities/professional-cost-detail.entity';
 import { CreateProfessionalCostDetailDto } from './dto/create-professional-cost.dto';
 import { ProjectsService } from '../projects/projects.service';
-import { Project } from '../projects/entities/project.entity';
 import BigNumber from 'bignumber.js';
 
 @Injectable()

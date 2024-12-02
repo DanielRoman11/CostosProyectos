@@ -32,20 +32,20 @@ export class StaffController {
   }
 
   @Get(':id')
-  findOne(@Param('id', new ParseNumberOrUuidPipe()) id: Pick<Staff, 'id'>) {
+  findOne(@Param('id', new ParseNumberOrUuidPipe()) id: number) {
     return this.staffService.findOne(id);
   }
 
   @Put(':id')
   update(
     @Body() input: UpdateStaffDto,
-    @Param('id', new ParseNumberOrUuidPipe()) id: Pick<Staff, 'id'>,
+    @Param('id', new ParseNumberOrUuidPipe()) id: number,
   ) {
     return this.staffService.update(input, id);
   }
 
   @Delete(':id')
-  remove(@Param('id', new ParseNumberOrUuidPipe()) id: Pick<Staff, 'id'>) {
+  remove(@Param('id', new ParseNumberOrUuidPipe()) id: number) {
     return this.staffService.delete(id);
   }
 }
