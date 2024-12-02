@@ -13,7 +13,7 @@ export class ProfessionalCostDetailController {
     @Param('project_id', new ParseNumberOrUuidPipe())
     project_id: string,
     @Body() input: CreateProfessionalCostDetailDto,
-  ) {
+  ): Promise<ProfessionalCostDetails> {
     return this.professionalService.createProfessionalCost(input, project_id);
   }
 

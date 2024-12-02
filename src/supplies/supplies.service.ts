@@ -153,7 +153,7 @@ export class SuppliesService {
       }, new BigNumber(0))
       .toFixed(2);
 
-    const supply_cost = await this.supplyCostRepo.save({
+    const supplyCost = await this.supplyCostRepo.save({
       unit: input.unit,
       total_cost,
       items: input.items,
@@ -161,15 +161,8 @@ export class SuppliesService {
       project,
     });
 
-    console.log(supply_cost);
+    await this.projectService.calculate_project_cost(project.id);
 
-    await this.projectService
-      .calculate_project_cost(project.id)
-      .then(() => {
-        console.log('Exito');
-      })
-      .catch((err) => {
-        console.log('Falló!', err);
-      });
+    return supplyCost;
   }
 }

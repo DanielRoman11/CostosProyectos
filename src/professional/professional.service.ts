@@ -157,7 +157,7 @@ export class ProfessionalService {
       }, new BigNumber(0))
       .toFixed(2);
 
-    await this.professionalCostRepo.save({
+    const professionalCost = await this.professionalCostRepo.save({
       ...input,
       project,
       total_cost,
@@ -165,5 +165,7 @@ export class ProfessionalService {
     });
 
     await this.projectService.calculate_project_cost(project.id);
+
+    return professionalCost;
   }
 }

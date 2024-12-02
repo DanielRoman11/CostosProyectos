@@ -13,12 +13,12 @@ export class SuppliesCostDetailController {
     @Param('project_id', new ParseNumberOrUuidPipe())
     project_id: string,
     @Body() input: CreateSupplyCostDetailDto,
-  ) {
+  ): Promise<SupplyCostDetails> {
     return this.supplyService.createSupplyCost(input, project_id);
   }
 
   @Get()
-  findAll() {
+  findAll(): Promise<SupplyCostDetails[]> {
     return this.supplyService.findAllSupplyCost();
   }
 }
