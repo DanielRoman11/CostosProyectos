@@ -4,7 +4,6 @@ import {
   ArrayNotEmpty,
   ValidateNested,
   IsString,
-  IsOptional,
   Length,
 } from 'class-validator';
 import { Transform, Type } from 'class-transformer';
