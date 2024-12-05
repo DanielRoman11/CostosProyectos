@@ -10,7 +10,6 @@ import {
 import { CategoriesService } from './categories.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
-import { Category } from './entities/category.entity';
 import { ParseNumberOrUuidPipe } from '../common/pipes/parse-int-if-number.pipe';
 
 @Controller('category')

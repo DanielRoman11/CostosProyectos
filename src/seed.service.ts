@@ -245,6 +245,7 @@ export class SeedService extends CommandRunner {
           professional: pro,
           quantity: '9',
         })),
+        description: 'Principales',
       },
       project.id,
     );

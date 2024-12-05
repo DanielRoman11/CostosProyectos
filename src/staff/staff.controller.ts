@@ -11,7 +11,6 @@ import {
 import { CreateStaffDto } from './dto/create-staff.dto';
 import { StaffService } from './staff.service';
 import { SearchQuerysStaff } from './dto/searchQueryStaff';
-import { Staff } from './entities/staff.entity';
 import { UpdateStaffDto } from './dto/update-staff.dto';
 import { ParseNumberOrUuidPipe } from '../common/pipes/parse-int-if-number.pipe';
 
