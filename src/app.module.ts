@@ -7,12 +7,13 @@ import { CategoriesModule } from './categories/categories.module';
 import { ProjectsModule } from './projects/projects.module';
 import { CommandRunnerModule } from 'nest-commander';
 import { SeedService } from './seed.service';
+import { ExistInSupplyCostConstraint } from './common/validators/exists-in-database.decorator';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: '.env'
+      envFilePath: '.env',
     }),
     ProfessionalModule,
     StaffModule,
@@ -21,6 +22,6 @@ import { SeedService } from './seed.service';
     ProjectsModule,
     CommandRunnerModule,
   ],
-  providers: [SeedService],
+  providers: [SeedService, ExistInSupplyCostConstraint],
 })
 export class AppModule {}

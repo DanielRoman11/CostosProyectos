@@ -8,6 +8,7 @@ import {
 import { Transform, Type } from 'class-transformer';
 import { ItemQuantityDto } from './create-supply-item.dto';
 import { UniqueArray } from '../../common/validators/unique-array-decorator';
+import { ExistInSupplyCost } from '../../common/validators/exists-in-database.decorator';
 
 export class CreateSupplyCostDetailDto {
   @IsNotEmpty({
@@ -17,9 +18,13 @@ export class CreateSupplyCostDetailDto {
     message: 'Debe enviar un conjunto de profesionales con sus cantidades',
   })
   @ArrayNotEmpty({ message: 'Debe seleccionar al menos un profesional' })
-  @ValidateNested({ each: true })
+  @ValidateNested({
+    each: true,
+    message: 'Todos los objetos tiene que ser iguales',
+  })
   @Type(() => ItemQuantityDto)
   @UniqueArray('supply')
+	@ExistInSupplyCost()
   items: ItemQuantityDto[];
 
   @IsNotEmpty({ message: 'La categoria no puede estar vacia' })
