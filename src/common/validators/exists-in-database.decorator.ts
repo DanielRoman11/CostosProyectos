@@ -19,8 +19,11 @@ export class ExistInSupplyCostConstraint
   async validate(value: any): Promise<boolean> {
     const items: ItemQuantityDto[] = value;
     const supplies = await this.supplyService.findCostByIds(
-      items.map((item) => item.supply.id),
+      items.map((item) => {
+        return item.supply;
+      }),
     );
+    console.log(supplies);
     return supplies.length === items.length;
   }
 

@@ -5,7 +5,7 @@ import { Transform, Type } from 'class-transformer';
 export class ItemQuantityDto {
   @IsNotEmpty({ message: 'El ID del suministro no puede estar vacío' })
   @Type(() => Supply)
-  supply: Pick<Supply, 'id'>;
+  supply: number;
 
   @IsNotEmpty({ message: 'La cantidad no puede estar vacía' })
   @IsString({ message: 'El decimal debe ser una cadena de texto' })

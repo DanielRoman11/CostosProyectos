@@ -15,6 +15,8 @@ import { SupplyCostDetails } from './entities/supply-cost-detail.entity';
 import { CreateSupplyCostDetailDto } from './dto/create-supply-cost.dto';
 import { ProjectsService } from 'src/projects/projects.service';
 import BigNumber from 'bignumber.js';
+import UpdateSupplyCostDto from './dto/update-supply-cost.dto';
+import { SupplyItem } from './entities/supply-item.entity';
 
 @Injectable()
 export class SuppliesService {
@@ -105,7 +107,7 @@ export class SuppliesService {
     return await query.getMany();
   }
 
-  public async findByIds(ids: Pick<Supply, 'id'>[]) {
+  public async findByIds(ids: number[]) {
     const query = this.baseQuery().whereInIds(ids);
     this.logQuery(query);
     return await query.getMany();
@@ -114,33 +116,18 @@ export class SuppliesService {
   public async createSupplyCost(
     input: CreateSupplyCostDetailDto,
     project_id: string,
-  ) {
-    const supplies = await this.findByIds(
-      input.items.map((item) => item.supply),
-    );
-
-    const foundSuppliesIds = new Set(supplies.map((supply) => supply.id));
-    const missingsupplies = input.items
-      .filter((item) => !foundSuppliesIds.has(item.supply.id))
-      .map((item) => item.supply);
-
-    missingsupplies.length > 0 &&
-      (() => {
-        throw new NotFoundException(
-          `No se encontraron los siguientes suministros: ${missingsupplies.join(', ')}`,
-        );
-      })();
-
-    const [project, category] = await Promise.all([
+  ): Promise<SupplyCostDetails> {
+    const [project, category, supplies] = await Promise.all([
       this.projectService.findOne(project_id),
       this.categoryService.findOne(input.category_id),
+      this.findByIds(input.items.map((item) => item.supply)),
     ]);
 
     const total_cost = supplies
       .reduce((total, supply) => {
         const unit_price = new BigNumber(supply.unit_price);
         const qty = new BigNumber(
-          input.items.find((item) => item.supply.id === supply.id)?.quantity,
+          input.items.find((item) => item.supply === supply.id)?.quantity,
         );
 
         if (!qty) {
@@ -159,7 +146,109 @@ export class SuppliesService {
       items: input.items,
       category,
       project,
-    });
+    } as unknown as SupplyCostDetails);
+
+    await this.projectService.calculate_project_cost(project.id);
+
+    return supplyCost;
+  }
+
+  public async findOneSupplyCost(
+    id: Pick<SupplyCostDetails, 'id'>,
+  ): Promise<SupplyCostDetails> {
+    const query = this.costBaseQuery().where('sc.id = :id', { id });
+    this.logQuery(query);
+    return (
+      (await query.getOne()) ??
+      (() => {
+        throw new NotFoundException(
+          'No se encontraron los costos de los suministros buscasdos',
+        );
+      })()
+    );
+  }
+
+  public async findCostByIds(ids: Pick<SupplyCostDetails, 'id'>[]) {
+    const query = this.baseQuery().whereInIds(ids);
+    this.logQuery(query);
+    return (
+      (await query.getMany()) ??
+      (() => {
+        throw new NotFoundException(
+          'No se encontraron los costos de los suministros buscasdos',
+        );
+      })()
+    );
+  }
+
+  public async updateSupplyCost(
+    input: UpdateSupplyCostDto,
+    id: Pick<SupplyCostDetails, 'id'>,
+    project_id: string,
+  ): Promise<SupplyCostDetails> {
+    const prevSupplyCost = await this.findOneSupplyCost(id);
+    const [project, category, existingSupplies] = await Promise.all([
+      this.projectService.findOne(project_id),
+      this.categoryService.findOne(input.category_id),
+      this.findByIds(input.items.map((item) => item.supply)),
+    ]);
+
+	    const total_cost = existingSupplies
+      .reduce((total, supply) => {
+        const unit_price = new BigNumber(supply.unit_price);
+        const qty = new BigNumber(
+          input.items.find((item) => item.supply === supply.id)?.quantity,
+        );
+
+        if (!qty) {
+          throw new Error(
+            `Cantidad no encontrada para el suministro con ID ${supply.id}`,
+          );
+        }
+
+        return total.plus(unit_price.times(qty));
+      }, new BigNumber(0))
+      .toFixed(2);
+
+    const updatedItems: SupplyItem[] = [
+      ...prevSupplyCost.items.map((item) => {
+        const newItem = input.items.find(
+          (newItem) => newItem.supply === item.supply.id,
+        );
+        return newItem
+          ? ({
+              id: item.id,
+              supply: item.supply,
+              quantity: newItem.quantity,
+            } as SupplyItem)
+          : item;
+      }),
+    ];
+
+    const newItems = [
+      ...input.items
+        .filter(
+          (newItem) =>
+            !prevSupplyCost.items.some(
+              (item) => item.supply.id === newItem.supply,
+            ),
+        )
+        .map((newItem) => ({
+          supply: existingSupplies.find(
+            (supply) => supply.id === newItem.supply,
+          ),
+          quantity: newItem.quantity,
+        })),
+    ];
+
+    const supplyCost = await this.supplyCostRepo.save({
+      ...prevSupplyCost,
+      unit: input.unit,
+      total_cost,
+      items: [...updatedItems, ...newItems],
+      category,
+      project,
+    } as SupplyCostDetails);
 
     await this.projectService.calculate_project_cost(project.id);
 

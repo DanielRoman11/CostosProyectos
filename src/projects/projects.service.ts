@@ -2,11 +2,9 @@ import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { Project } from './entities/project.entity';
-import constants from '../common/shared/constants';
 import { Repository, SelectQueryBuilder } from 'typeorm';
+import constants from '../common/shared/constants';
 import BigNumber from 'bignumber.js';
-import { ProfessionalCostDetails } from '../professional/entities/professional-cost-detail.entity';
-import { SupplyCostDetails } from '../supplies/entities/supply-cost-detail.entity';
 
 @Injectable()
 export class ProjectsService {
@@ -32,12 +30,6 @@ export class ProjectsService {
       .leftJoinAndSelect('sc.category', 'category')
       .leftJoinAndSelect('sc.items', 'si')
       .leftJoinAndSelect('si.supply', 's');
-  }
-
-  private minimalBaseQuery() {
-    return this.projectRepo
-      .createQueryBuilder('pr')
-      .orderBy('pr.updatedAt', 'DESC');
   }
 
   public async create(input: CreateProjectDto) {
@@ -73,60 +65,10 @@ export class ProjectsService {
     await this.projectRepo.save(project);
   }
 
-  private calculate_total_cost(projects: Project[]) {
-    return projects.reduce((total, project) => {
-      const total_cost = new BigNumber(project.total_cost ?? 0);
-      const final_cost = total.plus(total_cost);
-      return final_cost;
-    }, new BigNumber(0));
-  }
-
-  public async findProjectTotalCostInTime() {
-    const query = this.minimalBaseQuery()
-      .select(['pr.createdAt', 'pr.total_cost'])
-      .where("pr.createdAt BETWEEN (NOW() - INTERVAL '1' YEAR) AND NOW()");
-
-    const projects = await query.getMany();
-    const now = new Date();
-
-    const month = projects.filter((project) => {
-      const createdAt = new Date(project.createdAt);
-      const monthAgo = new Date(now);
-      monthAgo.setMonth(now.getMonth() - 1);
-      return createdAt >= monthAgo && createdAt <= now;
-    });
-
-    const week = projects.filter((project) => {
-      const createdAt = new Date(project.createdAt);
-      const weekAgo = new Date(now);
-      weekAgo.setDate(now.getDate() - 7);
-      return createdAt >= weekAgo && createdAt <= now;
-    });
-
-    const year_cost = this.calculate_total_cost(projects);
-    const month_cost = this.calculate_total_cost(month);
-    const week_cost = this.calculate_total_cost(week);
-
-    return {
-      year_cost,
-      month_cost,
-      week_cost,
-    };
-  }
-
   public async findAll() {
     const query = this.baseQuery();
     this.logQuery(query);
     return await query.getMany();
-    // const calc_projects = await this.calculate_all_total_cost(projects);
-
-    // return projects.every(
-    //   (project) =>
-    //     calc_projects.find((p) => p.id === project.id).total_cost ===
-    //     project.total_cost,
-    // )
-    //   ? projects
-    //   : await this.projectRepo.save(calc_projects);
   }
 
   public async findOne(id: string | string) {

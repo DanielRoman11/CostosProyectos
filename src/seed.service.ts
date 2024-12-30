@@ -255,51 +255,67 @@ export class SeedService extends CommandRunner {
       {
         items: [
           {
-            supply: await this.suppliesRepo.findOne({
-              where: { name: ILike('%soldadura%') },
-            }),
+            supply: (
+              await this.suppliesRepo.findOne({
+                where: { name: ILike('%soldadura%') },
+              })
+            ).id,
             quantity: '5',
           },
           {
-            supply: await this.suppliesRepo.findOne({
-              where: { name: ILike('%discos de pulir%') },
-            }),
+            supply: (
+              await this.suppliesRepo.findOne({
+                where: { name: ILike('%discos de pulir%') },
+              })
+            ).id,
             quantity: '1',
           },
           {
-            supply: await this.suppliesRepo.findOne({
-              where: { name: ILike('%de grata%') },
-            }),
+            supply: (
+              await this.suppliesRepo.findOne({
+                where: { name: ILike('%de grata%') },
+              })
+            ).id,
             quantity: '0.125',
           },
           {
-            supply: await this.suppliesRepo.findOne({
-              where: { name: ILike('%kit de tintas%') },
-            }),
+            supply: (
+              await this.suppliesRepo.findOne({
+                where: { name: ILike('%kit de tintas%') },
+              })
+            ).id,
             quantity: '0.20',
           },
           {
-            supply: await this.suppliesRepo.findOne({
-              where: { name: ILike('%transparente%') },
-            }),
+            supply: (
+              await this.suppliesRepo.findOne({
+                where: { name: ILike('%transparente%') },
+              })
+            ).id,
             quantity: '2',
           },
           {
-            supply: await this.suppliesRepo.findOne({
-              where: { name: ILike('%oscuro%') },
-            }),
+            supply: (
+              await this.suppliesRepo.findOne({
+                where: { name: ILike('%oscuro%') },
+              })
+            ).id,
             quantity: '0.05',
           },
           {
-            supply: await this.suppliesRepo.findOne({
-              where: { name: ILike('%combustible motosoldador%') },
-            }),
+            supply: (
+              await this.suppliesRepo.findOne({
+                where: { name: ILike('%combustible motosoldador%') },
+              })
+            ).id,
             quantity: '7',
           },
           {
-            supply: await this.suppliesRepo.findOne({
-              where: { name: ILike('%combustible generador%') },
-            }),
+            supply: (
+              await this.suppliesRepo.findOne({
+                where: { name: ILike('%combustible generador%') },
+              })
+            ).id,
             quantity: '7',
           },
         ],
@@ -313,39 +329,51 @@ export class SeedService extends CommandRunner {
       {
         items: [
           {
-            supply: await this.suppliesRepo.findOne({
-              where: { name: 'generador' },
-            }),
+            supply: (
+              await this.suppliesRepo.findOne({
+                where: { name: 'generador' },
+              })
+            ).id,
             quantity: '1',
           },
           {
-            supply: await this.suppliesRepo.findOne({
-              where: { name: 'motosoldador' },
-            }),
+            supply: (
+              await this.suppliesRepo.findOne({
+                where: { name: 'motosoldador' },
+              })
+            ).id,
             quantity: '1',
           },
           {
-            supply: await this.suppliesRepo.findOne({
-              where: { name: 'pulidora' },
-            }),
+            supply: (
+              await this.suppliesRepo.findOne({
+                where: { name: 'pulidora' },
+              })
+            ).id,
             quantity: '2',
           },
           {
-            supply: await this.suppliesRepo.findOne({
-              where: { name: 'extractor' },
-            }),
+            supply: (
+              await this.suppliesRepo.findOne({
+                where: { name: 'extractor' },
+              })
+            ).id,
             quantity: '1',
           },
           {
-            supply: await this.suppliesRepo.findOne({
-              where: { name: 'extensiones' },
-            }),
+            supply: (
+              await this.suppliesRepo.findOne({
+                where: { name: 'extensiones' },
+              })
+            ).id,
             quantity: '2',
           },
           {
-            supply: await this.suppliesRepo.findOne({
-              where: { name: 'reflector' },
-            }),
+            supply: (
+              await this.suppliesRepo.findOne({
+                where: { name: 'reflector' },
+              })
+            ).id,
             quantity: '1',
           },
         ],
@@ -359,9 +387,11 @@ export class SeedService extends CommandRunner {
       {
         items: [
           {
-            supply: await this.suppliesRepo.findOne({
-              where: { name: ILike('%furgon%') },
-            }),
+            supply: (
+              await this.suppliesRepo.findOne({
+                where: { name: ILike('%furgon%') },
+              })
+            ).id,
             quantity: '2',
           },
         ],

@@ -10,7 +10,6 @@ import {
 import { ProjectsService } from './projects.service';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
-import { Project } from './entities/project.entity';
 import { ParseNumberOrUuidPipe } from 'src/common/pipes/parse-int-if-number.pipe';
 
 @Controller('project')
@@ -43,10 +42,5 @@ export class ProjectsController {
   @Delete(':id')
   remove(@Param('id', new ParseNumberOrUuidPipe()) id: string) {
     return this.projectsService.remove(id);
-  }
-
-  @Get('total-cost')
-  findProjectTotalCostByTime() {
-    return this.projectsService.findProjectTotalCostInTime();
   }
 }
