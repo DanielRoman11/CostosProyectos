@@ -168,7 +168,7 @@ export class SuppliesService {
     );
   }
 
-  public async findCostByIds(ids: Pick<SupplyCostDetails, 'id'>[]) {
+  public async findCostByIds(ids: number[]) {
     const query = this.baseQuery().whereInIds(ids);
     this.logQuery(query);
     return (
@@ -193,7 +193,7 @@ export class SuppliesService {
       this.findByIds(input.items.map((item) => item.supply)),
     ]);
 
-	    const total_cost = existingSupplies
+    const total_cost = existingSupplies
       .reduce((total, supply) => {
         const unit_price = new BigNumber(supply.unit_price);
         const qty = new BigNumber(
@@ -209,6 +209,8 @@ export class SuppliesService {
         return total.plus(unit_price.times(qty));
       }, new BigNumber(0))
       .toFixed(2);
+
+    console.log(total_cost);
 
     const updatedItems: SupplyItem[] = [
       ...prevSupplyCost.items.map((item) => {
