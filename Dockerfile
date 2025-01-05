@@ -1,4 +1,4 @@
-# //* DEVELOPMENT INSTANCE
+# DEVELOPMENT INSTANCE
 FROM node:alpine AS development
 
 WORKDIR /usr/src/app
@@ -12,7 +12,7 @@ COPY . .
 
 RUN pnpm build
 
-# //* PRODUCTION INSTANCE
+# PRODUCTION INSTANCE
 FROM node:alpine AS production
 
 ARG NODE_ENV=production
@@ -29,4 +29,4 @@ COPY --from=development /usr/src/app/dist ./dist
 
 EXPOSE 3001
 
-CMD [ "node", "dist/app/auth/main" ]
+CMD [ "node", "dist/main" ]
